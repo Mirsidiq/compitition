@@ -1,250 +1,259 @@
-// import { customError } from "../../exception/customError.js";
+import path from "path";
+import fs from "fs";
+import url from "url";
+import { customError } from "../../exception/customError.js";
 // import { PositionsModel } from "../positions/model.js";
-// import { UsersModel } from "./model.js";
+import { UsersModel } from "./model.js";
 // import { IncomesModel } from "../incomes/model.js";
 // import { GroupsModel } from "../groups/model.js";
-// import { findUser } from "../../middlewares/checkToken.js";
-// import { verify } from "../../utils/jwt.js";
+import { findUser } from "../../middlewares/checkToken.js";
+import { verify } from "../../utils/jwt.js";
+import { HOST } from "../../config/config.js";
 // import { DirectionsModel } from "../directions/model.js";
 
-// const users = async (req, res, next) => {
-//   try {
-//     const token = req.headers?.token;
-//     if (token) {
-//       const decode = await verify(token).catch((err) =>
-//         next(new customError(400, err.message))
-//       );
-//       let temp = await findUser(decode);
-//       if (temp.admin) {
-//         const { group, username, contact, gender } = req.query;
-//         if (username) {
-//           const data = await UsersModel.findAll({
-//             where: {
-//               first_name: username,
-//               left_date: null,
-//             },
-//           });
-//           data.length > 0
-//             ? res.status(200).json({
-//                 message: "users",
-//                 data,
-//               })
-//             : res.status(404).json({
-//                 message: "not found",
-//                 data,
-//               });
-//         } else if (contact) {
-//           const data = await UsersModel.findOne({
-//             where: {
-//               contact: "+" + contact,
-//               left_date: null,
-//             },
-//           });
-//           data > 0
-//             ? res.status(200).json({
-//                 message: "user",
-//                 data,
-//               })
-//             : res.status(404).json({
-//                 message: "not found",
-//                 data,
-//               });
-//         } else if (gender) {
-//           const data = await UsersModel.findAll({
-//             where: {
-//               gender: gender == "male" ? "1" : "2",
-//               left_date: null,
-//             },
-//           });
-//           data.length > 0
-//             ? res.status(200).json({
-//                 message: "users",
-//                 data,
-//               })
-//             : res.status(404).json({
-//                 message: "not found",
-//                 data,
-//               });
-//         } else if (group) {
-//           const data = await GroupsModel.findOne({
-//             where: {
-//               gr_number: group,
-//             },
-//             include: [UsersModel],
-//           });
-//           let users = data.users.filter((user) => user.left_date == null);
-//           users > 0
-//             ? res.status(200).json({
-//                 message: "users",
-//                 data: users,
-//               })
-//             : res.status(404).json({
-//                 message: "not found",
-//                 data: users,
-//               });
-//         } else {
-//           const data = await UsersModel.findAll();
-//           data.length > 0
-//             ? res.status(200).json({
-//                 message: "users",
-//                 data,
-//               })
-//             : res.status(404).json({
-//                 message: "not found",
-//                 data,
-//               });
-//         }
-//       } else if (temp.teacher) {
-//         const data = await UsersModel.findAll({
-//           where: {
-//             pos_ref_id: temp.pos_id,
-//           },
-//           include: [GroupsModel, PositionsModel],
-//           attributes: ["user_id", "first_name", "last_name", "contact"],
-//         });
-//         res.status(200).json({
-//           message: "users",
-//           data,
-//         });
-//       } else if (temp.student) {
-//         const data = await UsersModel.findOne({
-//           where: {
-//             pos_ref_id: temp.pos_id,
-//             user_id: temp.user_id,
-//           },
-//           include: [GroupsModel, IncomesModel],
-//           attributes: ["user_id", "first_name", "last_name", "contact"],
-//         });
-//         if (data) {
-//           const directionId = data.group?.gr_id || 0;
-//           const direction = await DirectionsModel.findByPk(directionId, {
-//             attributes: ["dir_name"],
-//           });
-//           let assignedObj = {};
-//           assignedObj.direction = direction?.dir_name;
-//           Object.assign(assignedObj, data.dataValues);
-//           res.status(200).json({
-//             message: "users",
-//             data: assignedObj,
-//           });
-//         } else {
-//           next(new customError(404, "not found"));
-//         }
-//       }
-//     } else {
-//       next(new customError(401, "unauthorized"));
-//     }
-//   } catch (error) {
-//     next(new customError(500, error.message));
-//   }
-// };
+const assistents = async (req, res, next) => {
+  try {
+    const { username, lastname, contact } = req.query;
+    if (username && username != "") {
+      const user = await UsersModel.findOne({
+        where: {
+          username,
+        },
+      });
+      user
+        ? res.status(200).json({
+            status: 200,
+            message: "success",
+            data: user,
+          })
+        : res.status(404).json({
+            status: 404,
+            message: "not found",
+            data: {},
+          });
+    } else if (lastname && lastname != "" && contact && contact != "") {
+      const user = UsersModel.findOne({
+        where: {
+          lastname,
+          contact,
+        },
+      });
+      user
+        ? res.status(200).json({
+            status: 200,
+            message: "success",
+            data: user,
+          })
+        : res.status(404).json({
+            status: 404,
+            message: "not found",
+            data: {},
+          });
+    } else if (lastname && lastname != "") {
+      const user = await UsersModel.findAll({
+        where: {
+          lastname,
+          role: "assistent",
+        },
+      });
+      user.length
+        ? res.status(200).json({
+            status: 200,
+            message: "success",
+            data: user,
+          })
+        : res.status(404).json({
+            status: 404,
+            message: "not found",
+            data: [],
+          });
+    } else if (contact && contact != "") {
+      const user = await UsersModel.findOne({
+        where: {
+          contact,
+        },
+      });
+      user
+        ? res.status(200).json({
+            status: 200,
+            message: "success",
+            data: user,
+          })
+        : res.status(404).json({
+            status: 404,
+            message: "not found",
+            data: {},
+          });
+    } else {
+      const user = await UsersModel.findAll({
+        where: {
+          role: "assistent",
+        },
+      });
+      user.length > 0
+        ? res.status(200).json({
+            status: 200,
+            message: "success",
+            data: user,
+          })
+        : res.status(404).json({
+            status: 404,
+            message: "not found",
+            data: [],
+          });
+    }
+  } catch (error) {
+    next(new customError(500, error.message));
+  }
+};
 
-// const addUser = async (req, res, next) => {
-//   try {
-//     const {
-//       group_ref_id,
-//       left_date,
-//       come_date,
-//       email,
-//       contact,
-//       gender,
-//       last_name,
-//       first_name,
-//       pos_ref_id,
-//       role,
-//     } = req.body;
-//     const newUser = await UsersModel.create({
-//       group_ref_id,
-//       left_date,
-//       come_date,
-//       email,
-//       contact,
-//       gender,
-//       last_name,
-//       first_name,
-//       pos_ref_id,
-//       role,
-//     });
-//     newUser
-//       ? res.status(201).json({
-//           message: "created",
-//           data: newUser,
-//         })
-//       : res.status(400).json({
-//           message: "not created",
-//           data: {},
-//         });
-//   } catch (error) {
-//     next(new customError(500, error.message));
-//   }
-// };
-// const updateUser = async (req, res, next) => {
-//   const { id } = req.params;
-//   try {
-//     const {
-//       group_ref_id,
-//       left_date,
-//       come_date,
-//       email,
-//       contact,
-//       gender,
-//       last_name,
-//       first_name,
-//       pos_ref_id,
-//       role,
-//     } = req.body;
-//     const newUser = await UsersModel.update(
-//       {
-//         group_ref_id,
-//         left_date,
-//         come_date,
-//         email,
-//         contact,
-//         gender,
-//         last_name,
-//         first_name,
-//         pos_ref_id,
-//         role,
-//       },
-//       {
-//         where: {
-//           user_id: id,
-//         },
-//         returning: true,
-//       }
-//     );
-//     newUser[0] == 1
-//       ? res.status(201).json({
-//           message: "updated",
-//           data: newUser[1],
-//         })
-//       : res.status(400).json({
-//           message: "not updated",
-//           data: {},
-//         });
-//   } catch (error) {
-//     next(new customError(500, error.message));
-//   }
-// };
-// const deleteUser = async (req, res, next) => {
-//   const { id } = req.params;
-//   try {
-//     const newUser = await UsersModel.destroy({
-//       where: {
-//         user_id: id,
-//       },
-//     });
-//     newUser == 1
-//       ? res.status(201).json({
-//           message: "deleted",
-//         })
-//       : res.status(400).json({
-//           message: "not deleted",
-//           data: {},
-//         });
-//   } catch (error) {
-//     next(new customError(500, error.message));
-//   }
-// };
+const addUser = async (req, res, next) => {
+  try {
+    if (!req.files) {
+      next(new customError(400, "no files were uploaded"));
+      return;
+    }
+    const temp = req.files.image;
+    const salt = Date.now() + temp.name;
+    const uploadPath = path.join(process.cwd(), "uploads", salt);
+    const extensionName = path.extname(temp.name);
+    const allowedExtension = [".png", ".jpg", ".jpeg", ".svg"];
+    if (!allowedExtension.includes(extensionName)) {
+      next(new customError(422, "Invalid image"));
+      return;
+    }
+    temp.mv(uploadPath, async (err) => {
+      if (err) return next(new customError(500, err.message));
+      const {
+        group_ref_id,
+        password,
+        contact,
+        gender,
+        last_name,
+        first_name,
+        direction_ref_id,
+        age,
+        username,
+        role,
+      } = req.body;
+      const newUser = await UsersModel.create({
+        group_ref_id,
+        password,
+        contact,
+        gender,
+        last_name,
+        first_name,
+        direction_ref_id,
+        age,
+        username,
+        role,
+        image: `${HOST}/${salt}`,
+      });
 
-export { users, addUser, updateUser, deleteUser };
+      newUser
+        ? res.status(201).json({
+            message: "success",
+            data: newUser,
+          })
+        : res.status(400).json({
+            message: "failed",
+            data: {},
+          });
+    });
+  } catch (error) {
+    next(new customError(500, error.message));
+  }
+};
+const updateUser = async (req, res, next) => {
+  const { id } = req.params;
+  const userById = await UsersModel.findByPk(id, { attributes: ["image"] });
+  const deletedFilePath = path.join(
+    process.cwd(),
+    "uploads",
+    url.pathToFileURL(userById.image).pathname.split("/").at(-1)
+  );
+  if (!req.files) {
+    next(new customError(400, "no files were uploaded"));
+    return;
+  }
+  const temp = req.files.image;
+  const salt = Date.now() + temp.name;
+  const uploadPath = path.join(process.cwd(), "uploads", salt);
+  const extensionName = path.extname(temp.name);
+  const allowedExtension = [".png", ".jpg", ".jpeg", ".svg"];
+  if (!allowedExtension.includes(extensionName)) {
+    next(new customError(422, "Invalid image"));
+    return;
+  }
+  temp.mv(uploadPath, async (err) => {
+    if (err) return next(new customError(500, err.message));
+    const {
+      group_ref_id,
+      password,
+      contact,
+      gender,
+      last_name,
+      first_name,
+      direction_ref_id,
+      age,
+      username,
+      role,
+    } = req.body;
+    const newUser = await UsersModel.update(
+      {
+        group_ref_id,
+        contact,
+        gender,
+        last_name,
+        first_name,
+        role,
+        password,
+        direction_ref_id,
+      age,
+      username,
+      image:`${HOST}/${salt}`
+      },
+      {
+        where: {
+          user_id: id,
+        },
+        returning: true,
+      }
+    );
+    newUser[0] == 1
+      ? res.status(201).json({
+          message: "updated",
+          data: newUser[1],
+        })
+      : res.status(400).json({
+          message: "not updated",
+          data: {},
+        });
+        fs.unlink(deletedFilePath, async (err) => {
+            if (err) return next(new customError(500, err.message));
+            console.log("ok");
+        });
+  });
+};
+const deleteUser = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const newUser = await UsersModel.destroy({
+      where: {
+        user_id: id,
+      },
+    });
+    newUser == 1
+      ? res.status(201).json({
+          message: "deleted",
+        })
+      : res.status(400).json({
+          message: "not deleted",
+          data: {},
+        });
+  } catch (error) {
+    next(new customError(500, error.message));
+  }
+};
+
+export { assistents, addUser, updateUser, deleteUser };

@@ -40,13 +40,18 @@ const UsersModel=sequelize.define("users",{
     is:/^\+?[1-9][0-9]{7,11}$/
   }
  },
+ password:{
+  type:DataTypes.STRING(32),
+  allowNull:false
+ },
  image:{
   type:DataTypes.TEXT,
   allowNull:false
  },
  username:{
   type:DataTypes.STRING(64),
-  allowNull:false
+  allowNull:false,
+  unique:true
  },
  group_ref_id:{
   type:DataTypes.BIGINT,
@@ -56,6 +61,7 @@ const UsersModel=sequelize.define("users",{
  },
  role:{
   type:DataTypes.ENUM("teacher","admin","student","assistent"),
+  allowNull:false
  },
  active:{
   type:DataTypes.BOOLEAN,

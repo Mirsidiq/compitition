@@ -4,7 +4,7 @@ import auth from "./auth/router.js";
 import directions from "./directions/router.js";
 // import positions from "./positions/router.js";
 // import groups from "./groups/router.js";
-// import users from "./users/router.js";
+import users from "./users/router.js";
 // import incomes from "./incomes/router.js";
 // import outlays from "./outlay/router.js";
 // import checks from "./check/router.js";
@@ -15,7 +15,7 @@ export default [
   directions,
 //   positions,
 //   groups,
-//   users,
+  users,
 //   incomes,
 //   outlays,
 //   checks,

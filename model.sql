@@ -9,8 +9,8 @@
 -- -- come_date='2022-02-13',
 -- -- group_ref_id=1
 
-insert into users(first_name,last_name,age,gender,contact,image,username,role) 
-values('mirsidiq','mirzokirov',21,'1','+998903971860','asdasldnalsndkadnlanda','mirsidiq_mirzokirov','admin');
+insert into users(first_name,last_name,age,gender,contact,image,username,role,password) 
+values('mirsidiq','mirzokirov',21,'1','+998903971860','asdasldnalsndkadnlanda','mirsidiq_mirzokirov','admin','+998903971860');
 
 
 

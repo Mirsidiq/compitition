@@ -3,11 +3,11 @@ import { UsersModel } from "../users/model.js";
 import { checkAdmin,checkAssistent, checkStudent, checkTeacher } from "../../utils/checkAdmin.js";
 import { customError } from "../../exception/customError.js";
 const login = async (req, res, next) => {
-  const { username, contact } = req.body;
+  const { username, password } = req.body;
   const findUser = await UsersModel.findOne({
     where: {
       username,
-      contact,
+      password,
     },
   });
   if (findUser) {
