@@ -1,6 +1,6 @@
 import { DataTypes } from "sequelize";
 import {sequelize} from "../../utils/sequelize.js";
-import { GroupsModel } from "../groups/model.js";
+// import { GroupsModel } from "../groups/model.js";
 const DirectionsModel=sequelize.define("directions",{
  dir_id:{
   type:DataTypes.BIGINT,
@@ -9,33 +9,32 @@ const DirectionsModel=sequelize.define("directions",{
   primaryKey:true
  },
  dir_name:{
-  type:DataTypes.STRING(30),
+  type:DataTypes.STRING(64),
   allowNull:false,
  },
  salary:{
-  type:DataTypes.BIGINT,
+  type:DataTypes.INTEGER,
   allowNull:false,
  },
- start_date:{
-  type:DataTypes.DATE,
-  allowNull:false,
-  defaultValue:DataTypes.NOW,
- },
- end_date:{
-  type:DataTypes.DATE,
+ duration:{
+  type:DataTypes.INTEGER,
   allowNull:false,
  },
+ active:{
+  type:DataTypes.BOOLEAN,
+  defaultValue:true
+ }
 },
 {
   timestamps:false,
   freezeTableName:true,
 })
-DirectionsModel.hasMany(GroupsModel,{
-  foreignKey:"dir_ref_id"
-})
-GroupsModel.belongsTo(DirectionsModel,{
-  foreignKey:"dir_ref_id"
-})
+// DirectionsModel.hasMany(GroupsModel,{
+//   foreignKey:"dir_ref_id"
+// })
+// GroupsModel.belongsTo(DirectionsModel,{
+//   foreignKey:"dir_ref_id"
+// })
 export{
   DirectionsModel
 }

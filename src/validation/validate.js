@@ -15,13 +15,15 @@ const checkDepartment = Joi.object({
   delete_at: Joi.string().allow(null),
 }).required();
 const checkDirectionBody = Joi.object({
-  dep_ref_id: Joi.number().integer().required(),
   dir_name: Joi.string().max(60).required(),
-  duration: Joi.number().required(),
-  salary: Joi.number().required(),
-  start_date: Joi.string().required(),
-  end_date: Joi.string().required(),
+  salary: Joi.number().integer().required(),
+  duration: Joi.number().integer().required(),
 });
+const checkDirectionBodyUpdate=Joi.object({
+  dir_name: Joi.string().max(60).allow(null),
+  salary: Joi.number().integer().allow(null),
+  duration: Joi.number().integer().allow(null),
+})
 const checkPositionBody = Joi.object({
   dep_ref_id: Joi.number().integer().required(),
   pos_name: Joi.string().max(60).required(),
@@ -66,6 +68,7 @@ export {
   checkDirection,
   checkPosition,
   checkDirectionBody,
+  checkDirectionBodyUpdate,
   checkPositionBody,
   checkGroupsBody,
   checkUsersBody,

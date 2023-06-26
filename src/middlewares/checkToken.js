@@ -1,7 +1,7 @@
 import { customError } from "../exception/customError.js";
 import { UsersModel } from "../modules/users/model.js";
 import {
-  checkAccounter,
+  checkAssistent,
   checkAdmin,
   checkStudent,
   checkTeacher,
@@ -12,27 +12,24 @@ const findUser = async (decode) => {
   const user = await UsersModel.findByPk(id);
   if (user) {
     if (await checkAdmin(user)) {
-      return { admin: true };
+      return { 
+        role: "admin",
+        user_id: id,
+      };
     } else if (await checkTeacher(user)) {
-      const { pos_id } = await checkTeacher(user);
       return {
-        teacher: true,
-        pos_id,
+        role: "teacher",
         user_id: id,
       };
     } else if (await checkStudent(user)) {
-      const { pos_id } = await checkStudent(user);
       return {
-        student: true,
-        pos_id,
+        role: "student",
         user_id: id,
       };
-    } else if (await checkAccounter(user)) {
+    } else if (await checkAssistent(user)) {
       {
-        const { pos_id } = await checkAccounter(user);
         return {
-          accounter: true,
-          pos_id,
+          role: "assistent",
           user_id: id,
         };
       }
@@ -45,12 +42,56 @@ const checkAdminToken = async (req, _, next) => {
   const decode = await verify(token).catch((err) =>
     next(new customError(400, err.message))
   );
+ if(decode){
   let temp = await findUser(decode);
-  if (temp.admin) {
+  if (temp.role=="admin") {
     next();
   } else {
-    next(new customError(401, "unauthorized"));
+    next(new customError(401, "you have no permission"));
+  }
+ }
+};
+const checkTeacherToken = async (req, _, next) => {
+  const token = req.headers?.token;
+  const decode = await verify(token).catch((err) =>
+    next(new customError(400, err.message))
+  );
+ if(decode){
+  let temp = await findUser(decode);
+  if (temp.role=="teacher") {
+    next();
+  } else {
+    next(new customError(401, "you have no permission"));
+  }
+ }
+};
+const checkAssistentToken = async (req, _, next) => {
+  const token = req.headers?.token;
+  const decode = await verify(token).catch((err) =>
+    next(new customError(400, err.message))
+  );
+ if(decode){
+  let temp = await findUser(decode);
+  if (temp.role=="assistent") {
+    next();
+  } else {
+    next(new customError(401, "you have no permission"));
+  }
+ }
+};
+const checkStudentToken = async (req, _, next) => {
+  const token = req.headers?.token;
+  const decode = await verify(token).catch((err) =>
+    next(new customError(400, err.message))
+  );
+  if(decode){
+    let temp = await findUser(decode);
+  if (temp.role=="student") {
+    next();
+  } else {
+    next(new customError(401, "you have no permission"));
+  }
   }
 };
 
-export { checkAdminToken, findUser };
+export { checkAdminToken,checkTeacherToken ,checkAssistentToken,checkStudentToken, findUser };

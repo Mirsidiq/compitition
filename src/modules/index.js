@@ -1,7 +1,7 @@
 import auth from "./auth/router.js";
 // import center from "./center/router.js";
 // import departments from "./departments/router.js";
-// import directions from "./directions/router.js";
+import directions from "./directions/router.js";
 // import positions from "./positions/router.js";
 // import groups from "./groups/router.js";
 // import users from "./users/router.js";
@@ -12,7 +12,7 @@ export default [
   auth,
 //   center,
 //   departments,
-//   directions,
+  directions,
 //   positions,
 //   groups,
 //   users,

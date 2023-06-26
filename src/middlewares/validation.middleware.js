@@ -9,6 +9,7 @@ import {
   checkIncomesBody,
   checkOutlaysBody,
   UserLoginBody,
+  checkDirectionBodyUpdate,
 } from "../validation/validate.js";
 
 const checkParamsId = (req, _, next) => {
@@ -23,6 +24,12 @@ const checkDepartmentBody = (req, _, next) => {
 };
 const checkDirectionBodyMiddleware = (req, _, next) => {
   const { error, __ } = checkDirectionBody.validate(req.body);
+  if (error) next(new customError(400, error.message.replaceAll('"', "")));
+  next();
+};
+
+const checkDirectionBodyUpdateMiddleware = (req, _, next) => {
+  const { error, __ } = checkDirectionBodyUpdate.validate(req.body);
   if (error) next(new customError(400, error.message.replaceAll('"', "")));
   next();
 };
@@ -60,6 +67,7 @@ export {
   checkParamsId,
   checkDepartmentBody,
   checkDirectionBodyMiddleware,
+  checkDirectionBodyUpdateMiddleware,
   checkPositionBodyMiddleware,
   checkGroupsBodyMiddleware,
   checkUsersBodyMiddleware,
