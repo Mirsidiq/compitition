@@ -6,8 +6,8 @@ const router=Router()
 
 router.get("/groups",groups)
 router.get("/groups/:id",checkParamsId,getById)
-router.post("/groups",checkAdminToken,checkGroupsBodyMiddleware,addGroup)
-router.put("/groups/:id",checkAdminToken,checkParamsId,updateGroup)
+router.post("/group/add",checkAdminToken,addGroup)
+router.put("/group/put/:id",checkAdminToken,checkParamsId,updateGroup)
 router.delete("/groups/:id",checkAdminToken,checkParamsId,deleteGroup)
 
 export default router

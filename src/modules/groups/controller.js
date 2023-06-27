@@ -1,8 +1,13 @@
+import path from "path"
+import url from "url"
+import fs from "fs"
 import { customError } from "../../exception/customError.js";
 import { UsersModel } from "../users/model.js";
 import { GroupsModel } from "./model.js";
 import { findUser } from "../../middlewares/checkToken.js";
 import { verify } from "../../utils/jwt.js";
+import { HOST } from "../../config/config.js";
+import { DirectionsModel } from "../directions/model.js";
 const groups = async (req, res, next) => {
   try {
     const token = req.headers?.token;
@@ -10,32 +15,43 @@ const groups = async (req, res, next) => {
       const decode = await verify(token).catch((err) =>
         next(new customError(400, err.message))
       );
-      let temp = await findUser(decode);
-      if (temp.admin) {
-        const data = await GroupsModel.findAll();
+      if(decode){
+        let temp = await findUser(decode);
+      if (temp.role=="admin") {
+        const data = await GroupsModel.findAll({include:[DirectionsModel]});
         data.length > 0
           ? res.status(200).json({
+            status:200,
               message: "groups",
               data,
             })
           : res.status(404).json({
+            status:404,
               message: "not found",
               data,
             });
-      } else if (temp.teacher) {
+      } else if (temp.role=="assistent") {
         const users = await UsersModel.findOne({
           where: {
             user_id: temp.user_id,
           },
           include: [GroupsModel],
-          attributes: ["user_id", "first_name", "last_name"],
+          attributes: ["user_id", "first_name", "last_name",'image'],
         });
         users
           ? res.status(200).json({
-              message: "teacher group",
+            status:200,
+              message: "success",
               data: users,
             })
           : next(new customError(404, "not found"));
+      }
+      else{
+        res.status(403).json({
+          status:403,
+          message: "you have no permission",
+        })
+      }
       }
     }
   } catch (error) {
@@ -46,18 +62,24 @@ const getById = async (req, res, next) => {
   try {
     const { id } = req.params;
     let data = await GroupsModel.findByPk(id, {
-      include: [UsersModel],
-      attributes: ["gr_id", "gr_number"],
+      include: [UsersModel,DirectionsModel]
     });
-    const users = data.users.filter((user) => user.left_date == null);
-    users.length > 0
+    const findAssistent=await UsersModel.findOne({
+      where:{
+        role:'assistent',
+        group_ref_id:id
+      }
+    })
+    data.assistent=`${findAssistent.first_name[0].toUpperCase()+findAssistent.first_name.slice(1)} ${findAssistent.last_name[0].toUpperCase()+findAssistent.last_name.slice(1)}`
+
+    data
       ? res.status(200).json({
           message: "groups",
-          data: users,
+          data:data
         })
       : res.status(404).json({
           message: "not found",
-          data: users,
+          data,
         });
   } catch (error) {
     next(new customError(500, error.message));
@@ -65,48 +87,107 @@ const getById = async (req, res, next) => {
 };
 const addGroup = async (req, res, next) => {
   try {
-    const { dir_ref_id, gr_number, begin_date, end_date } = req.body;
+    if (!req.files) {
+      next(new customError(400, "no files were uploaded"));
+      return;
+    }
+    const temp = req.files.image;
+    const salt = Date.now() + temp.name;
+    const uploadPath = path.join(process.cwd(), "uploads", salt);
+    const extensionName = path.extname(temp.name);
+    const allowedExtension = [".png", ".jpg", ".jpeg", ".svg"];
+    if (!allowedExtension.includes(extensionName)) {
+      next(new customError(422, "Invalid image"));
+      return;
+    }
+   temp.mv(uploadPath,async err=>{
+    if(err)return next(new customError(500,err.message))
+    try {
+      const { dir_ref_id, gr_number, teacher, assistent,days,start_time,created_at,room } = req.body;
+    let daysArr=days.slice(1,days.length-1).split(',')
     const newGroup = await GroupsModel.create({
-      dir_ref_id,
-      gr_number,
-      begin_date,
-      end_date,
+      dir_ref_id, gr_number, teacher, assistent,days:daysArr,start_time,created_at,room ,image:`${HOST}/${salt}`
+    },{
+      returning:true
     });
     newGroup
       ? res.status(201).json({
-          message: "created",
+        status:201,
+          message: "success",
           data: newGroup,
         })
       : res.status(400).json({
-          message: "not created",
+        status:400,
+          message: "failed",
           data: {},
         });
+    } catch (error) {
+      next(new customError(500,error.message))
+    }
+   })
   } catch (error) {
     next(new customError(500, error.message));
   }
 };
 const updateGroup = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    const { dir_ref_id, gr_number, begin_date, end_date } = req.body;
-    const newGroup = await GroupsModel.update(
-      { dir_ref_id, gr_number, begin_date, end_date },
-      {
-        where: {
-          gr_id: id,
-        },
-        returning: true,
+    const {id}=req.params
+    const groupById=await GroupsModel.findByPk(id,{attributes:['image']})
+    if(groupById){
+      if (!req.files) {
+        next(new customError(400, "no files were uploaded"));
+        return;
       }
-    );
-    newGroup[0] == 1
-      ? res.status(201).json({
-          message: "created",
-          data: newGroup[1],
-        })
-      : res.status(400).json({
-          message: "not created",
-          data: {},
+      const deletedFilePath = path.join(
+        process.cwd(),
+        "uploads",
+        url.pathToFileURL(groupById.image).pathname.split("/").at(-1)
+      );
+      const temp = req.files.image;
+      const salt = Date.now() + temp.name;
+      const uploadPath = path.join(process.cwd(), "uploads", salt);
+      const extensionName = path.extname(temp.name);
+      const allowedExtension = [".png", ".jpg", ".jpeg", ".svg"];
+      
+      if (!allowedExtension.includes(extensionName)) {
+        next(new customError(422, "Invalid image"));
+        return;
+      }
+     temp.mv(uploadPath,async err=>{
+      if(err)return next(new customError(500,err.message))
+      try {
+        const { dir_ref_id, gr_number, teacher, assistent,days,start_time,created_at,room } = req.body;
+      let daysArr=days.slice(1,days.length-1).split(',')
+      const newGroup = await GroupsModel.update({
+        dir_ref_id, gr_number, teacher, assistent,days:daysArr,start_time,created_at,room ,image:`${HOST}/${salt}`
+      },{
+        where:{
+          gr_id:id
+        },
+        returning:true
+      });
+      newGroup[0]==1
+        ? res.status(201).json({
+          status:201,
+            message: "success",
+            data: newGroup[1],
+          })
+        : res.status(400).json({
+          status:400,
+            message: "failed",
+            data: {},
+          });
+          fs.unlink(deletedFilePath, async (err) => {
+            if (err) return next(new customError(500, err.message));
         });
+      } catch (error) {
+        next(new customError(500,error.message))
+      }
+     })
+    }
+    else{
+      next(new customError(400,"failed"))
+    }
   } catch (error) {
     next(new customError(500, error.message));
   }
@@ -114,20 +195,35 @@ const updateGroup = async (req, res, next) => {
 const deleteGroup = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const newGroup = await GroupsModel.destroy({
-      where: {
-        gr_id: id,
-      },
-    });
-    newGroup == 1
-      ? res.status(201).json({
-          message: "deleted",
-          data: newGroup[1],
-        })
-      : res.status(400).json({
-          message: "not deleted",
-          data: {},
+    const groupById=await GroupsModel.findByPk(id,{attributes:['image']})
+    if(groupById){
+      const deletedFilePath = path.join(
+        process.cwd(),
+        "uploads",
+        url.pathToFileURL(groupById.image).pathname.split("/").at(-1)
+      );
+      fs.unlink(deletedFilePath, async (err) => {
+        if (err) return next(new customError(500, err.message));
+        const deleteGroup = await GroupsModel.destroy({
+          where: {
+            gr_id: id,
+          },
         });
+        deleteGroup == 1
+          ? res.status(201).json({
+            status:201,
+              message: "success",
+            })
+          : res.status(400).json({
+            status:400,
+              message: "failed",
+            });
+      })
+    }
+    else{
+      next(new customError(400,"failed"))
+    }
+    
   } catch (error) {
     next(new customError(500, error.message));
   }

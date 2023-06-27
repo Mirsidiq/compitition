@@ -11,7 +11,12 @@
 
 insert into users(first_name,last_name,age,gender,contact,image,username,role,password) 
 values('mirsidiq','mirzokirov',21,'1','+998903971860','asdasldnalsndkadnlanda','mirsidiq_mirzokirov','admin','+998903971860');
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJpYXQiOjE2ODc4NDg0ODgsImV4cCI6MTY4NzkzNDg4OH0.rhovrKVS9ca-fQqq_BL-FqPlkQ6tvoFsKFAYkysqS-k
 
+
+
+assistent
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQiLCJpYXQiOjE2ODc4NjIxMjQsImV4cCI6MTY4Nzk0ODUyNH0.SAcB_wLNM1ysXPWTV8anhTh8AIn8ERMZ6GTv3_7uAVE
 
 
 

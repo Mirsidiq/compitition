@@ -3,7 +3,7 @@ import auth from "./auth/router.js";
 // import departments from "./departments/router.js";
 import directions from "./directions/router.js";
 // import positions from "./positions/router.js";
-// import groups from "./groups/router.js";
+import groups from "./groups/router.js";
 import users from "./users/router.js";
 // import incomes from "./incomes/router.js";
 // import outlays from "./outlay/router.js";
@@ -14,7 +14,7 @@ export default [
 //   departments,
   directions,
 //   positions,
-//   groups,
+  groups,
   users,
 //   incomes,
 //   outlays,

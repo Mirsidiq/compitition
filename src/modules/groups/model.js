@@ -1,4 +1,4 @@
-import { DataTypes } from "sequelize";
+import { DATE, DataTypes } from "sequelize";
 import {sequelize} from "../../utils/sequelize.js";
 import { UsersModel } from "../users/model.js";
 import { DirectionsModel } from "../directions/model.js";
@@ -14,15 +14,38 @@ const GroupsModel=sequelize.define("groups",{
   allowNull:false,
  },
  gr_number:{
-  type:DataTypes.BIGINT,
+  type:DataTypes.STRING(64),
   allowNull:false,
  },
- begin_date:{
-  type:DataTypes.DATE
+ teacher:{
+  type:DataTypes.STRING(64),
+  allowNull:false
  },
- end_date:{
-  type:DataTypes.DATE
+ assistent:{
+  type:DataTypes.BIGINT,
+  allowNull:false
  },
+ image:{
+  type:DataTypes.TEXT,
+  allowNull:false
+ },
+ room:{
+  type:DataTypes.STRING(64),
+  allowNull:false
+ },
+ days:{
+  type:DataTypes.ARRAY(DataTypes.ENUM('dushanba','seshanba','chorshanba','payshanba','juma','shanba')),
+  allowNull:false,
+ },
+ start_time:{
+  type:DataTypes.TIME,
+  allowNull:false
+ },
+ created_at:{
+  type:DataTypes.DATE,
+  allowNull:false,
+  defaultValue:DataTypes.NOW
+ }
 },
 {
   timestamps:false,
