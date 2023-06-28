@@ -36,16 +36,19 @@ const checkGroupsBody = Joi.object({
   end_date: Joi.string().allow(null),
 });
 const checkUsersBody = Joi.object({
-  pos_ref_id: Joi.number().integer().required(),
-  first_name: Joi.string().max(20).required(),
-  last_name: Joi.string().max(20).required(),
+  firstname: Joi.string().max(20).required(),
+  lastname: Joi.string().max(20).required(),
   contact: Joi.string().max(15).required(),
-  email: Joi.string().max(60).required(),
-  come_date: Joi.string().allow(null),
-  left_date: Joi.string().allow(null),
-  group_ref_id: Joi.number().integer().allow(null),
-  role: Joi.string().allow(null),
   gender: Joi.string().required().max(12),
+});
+const checkAssistentBody = Joi.object({
+  firstname: Joi.string().max(20).required(),
+  lastname: Joi.string().max(20).required(),
+  contact: Joi.string().regex(/^\+?[1-9][0-9]{7,11}$/).required(),
+  gender: Joi.string().valid('1','2').required(),
+  username:Joi.string().required(),
+  age:Joi.number().integer().required(),
+  dir_ref_id:Joi.number().integer().required()
 });
 const checkIncomesBody = Joi.object({
   user_ref_id: Joi.number().integer().required(),
@@ -75,4 +78,5 @@ export {
   checkIncomesBody,
   checkOutlaysBody,
   UserLoginBody,
+  checkAssistentBody
 };

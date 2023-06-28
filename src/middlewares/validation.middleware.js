@@ -10,6 +10,7 @@ import {
   checkOutlaysBody,
   UserLoginBody,
   checkDirectionBodyUpdate,
+  checkAssistentBody,
 } from "../validation/validate.js";
 
 const checkParamsId = (req, _, next) => {
@@ -38,6 +39,11 @@ const checkPositionBodyMiddleware = (req, _, next) => {
   if (error) next(new customError(400, error.message.replaceAll('"', "")));
   next();
 };
+const checkAssistentBodyMiddleware = (req, _, next) => {
+  const {error,__}=checkAssistentBody.validate(req.body);
+  if (error)  next(new customError(400, error.message.replaceAll('"', "")));
+  next(); 
+}
 const checkGroupsBodyMiddleware = (req, _, next) => {
   const { error, __ } = checkGroupsBody.validate(req.body);
   if (error) next(new customError(400, error.message.replaceAll('"', "")));
@@ -74,4 +80,5 @@ export {
   checkIncomesBodyMiddleware,
   checkOutlaysBodyMiddleware,
   UserLoginBodyMiddleware,
+  checkAssistentBodyMiddleware
 };

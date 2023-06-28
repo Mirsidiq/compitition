@@ -1,5 +1,6 @@
 import { DataTypes,ENUM } from "sequelize";
 import {sequelize} from "../../utils/sequelize.js";
+import { AssistentsModel } from "../assistents/model.js";
 // import { IncomesModel } from "../incomes/model.js";
 const UsersModel=sequelize.define("users",{
   user_id:{
@@ -9,11 +10,11 @@ const UsersModel=sequelize.define("users",{
   primaryKey:true,
   unique:true
  },
- first_name:{
+ firstname:{
   type:DataTypes.STRING(20),
   allowNull:false
  },
- last_name:{
+ lastname:{
   type:DataTypes.STRING(20),
   allowNull:false
  },
@@ -41,7 +42,7 @@ const UsersModel=sequelize.define("users",{
   }
  },
  password:{
-  type:DataTypes.STRING(32),
+  type:DataTypes.TEXT,
   allowNull:false
  },
  image:{
@@ -52,12 +53,6 @@ const UsersModel=sequelize.define("users",{
   type:DataTypes.STRING(64),
   allowNull:false,
   unique:true
- },
- group_ref_id:{
-  type:DataTypes.BIGINT,
- },
- direction_ref_id:{
-  type:DataTypes.BIGINT,
  },
  role:{
   type:DataTypes.ENUM("teacher","admin","student","assistent"),
@@ -71,6 +66,12 @@ const UsersModel=sequelize.define("users",{
 {
   timestamps:false,
   freezeTableName:true,
+})
+UsersModel.hasOne(AssistentsModel,{
+  foreignKey:'user_ref_id'
+})
+AssistentsModel.belongsTo(UsersModel,{
+  foreignKey:"user_ref_id"
 })
 // UsersModel.hasMany(IncomesModel,{
 //   foreignKey:"user_ref_id"

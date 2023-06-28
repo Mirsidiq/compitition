@@ -1,111 +1,111 @@
 import path from "path";
 import fs from "fs";
 import url from "url";
+import sha256 from "sha256";
 import { customError } from "../../exception/customError.js";
 // import { PositionsModel } from "../positions/model.js";
 import { UsersModel } from "./model.js";
-// import { IncomesModel } from "../incomes/model.js";
 // import { GroupsModel } from "../groups/model.js";
 import { findUser } from "../../middlewares/checkToken.js";
 import { verify } from "../../utils/jwt.js";
 import { HOST } from "../../config/config.js";
 // import { DirectionsModel } from "../directions/model.js";
 
-const assistents = async (req, res, next) => {
-  try {
-    const { username, lastname, contact } = req.query;
-    if (username && username != "") {
-      const user = await UsersModel.findOne({
-        where: {
-          username,
-        },
-      });
-      user
-        ? res.status(200).json({
-            status: 200,
-            message: "success",
-            data: user,
-          })
-        : res.status(404).json({
-            status: 404,
-            message: "not found",
-            data: {},
-          });
-    } else if (lastname && lastname != "" && contact && contact != "") {
-      const user = UsersModel.findOne({
-        where: {
-          lastname,
-          contact,
-        },
-      });
-      user
-        ? res.status(200).json({
-            status: 200,
-            message: "success",
-            data: user,
-          })
-        : res.status(404).json({
-            status: 404,
-            message: "not found",
-            data: {},
-          });
-    } else if (lastname && lastname != "") {
-      const user = await UsersModel.findAll({
-        where: {
-          lastname,
-          role: "assistent",
-        },
-      });
-      user.length
-        ? res.status(200).json({
-            status: 200,
-            message: "success",
-            data: user,
-          })
-        : res.status(404).json({
-            status: 404,
-            message: "not found",
-            data: [],
-          });
-    } else if (contact && contact != "") {
-      const user = await UsersModel.findOne({
-        where: {
-          contact,
-        },
-      });
-      user
-        ? res.status(200).json({
-            status: 200,
-            message: "success",
-            data: user,
-          })
-        : res.status(404).json({
-            status: 404,
-            message: "not found",
-            data: {},
-          });
-    } else {
-      const user = await UsersModel.findAll({
-        where: {
-          role: "assistent",
-        },
-      });
-      user.length > 0
-        ? res.status(200).json({
-            status: 200,
-            message: "success",
-            data: user,
-          })
-        : res.status(404).json({
-            status: 404,
-            message: "not found",
-            data: [],
-          });
-    }
-  } catch (error) {
-    next(new customError(500, error.message));
-  }
-};
+// const users = async (req, res, next) => {
+//   try {
+//     const { username, lastname, contact } = req.query;
+//     if (username && username != "") {
+//       const user = await UsersModel.findOne({
+//         where: {
+//           username,
+//         },
+//       });
+//       user
+//         ? res.status(200).json({
+//             status: 200,
+//             message: "success",
+//             data: user,
+//           })
+//         : res.status(404).json({
+//             status: 404,
+//             message: "not found",
+//             data: {},
+//           });
+//     } else if (lastname && lastname != "" && contact && contact != "") {
+//       const user = UsersModel.findOne({
+//         where: {
+//           lastname,
+//           contact,
+//         },
+//       });
+//       user
+//         ? res.status(200).json({
+//             status: 200,
+//             message: "success",
+//             data: user,
+//           })
+//         : res.status(404).json({
+//             status: 404,
+//             message: "not found",
+//             data: {},
+//           });
+//     } else if (lastname && lastname != "") {
+//       const user = await UsersModel.findAll({
+//         where: {
+//           lastname,
+//           role: "assistent",
+//         },
+//       });
+//       user.length
+//         ? res.status(200).json({
+//             status: 200,
+//             message: "success",
+//             data: user,
+//           })
+//         : res.status(404).json({
+//             status: 404,
+//             message: "not found",
+//             data: [],
+//           });
+//     } else if (contact && contact != "") {
+//       const user = await UsersModel.findOne({
+//         where: {
+//           contact,
+//         },
+//       });
+//       user
+//         ? res.status(200).json({
+//             status: 200,
+//             message: "success",
+//             data: user,
+//           })
+//         : res.status(404).json({
+//             status: 404,
+//             message: "not found",
+//             data: {},
+//           });
+//     } else {
+//       const user = await UsersModel.findAll({
+//         where: {
+//           role: "assistent",
+//         },
+//       });
+//       user.length > 0
+//         ? res.status(200).json({
+//             status: 200,
+//             message: "success",
+//             data: user,
+//           })
+//         : res.status(404).json({
+//             status: 404,
+//             message: "not found",
+//             data: [],
+//           });
+//     }
+//   } catch (error) {
+//     next(new customError(500, error.message));
+//   }
+// };
 
 const addUser = async (req, res, next) => {
   try {
@@ -125,25 +125,21 @@ const addUser = async (req, res, next) => {
     temp.mv(uploadPath, async (err) => {
       if (err) return next(new customError(500, err.message));
       const {
-        group_ref_id,
         password,
         contact,
         gender,
-        last_name,
-        first_name,
-        direction_ref_id,
+        lastname,
+        firstname,
         age,
         username,
         role,
       } = req.body;
       const newUser = await UsersModel.create({
-        group_ref_id,
-        password,
+        password:sha256(password),
         contact,
         gender,
-        last_name,
-        first_name,
-        direction_ref_id,
+        lastname,
+        firstname,
         age,
         username,
         role,
@@ -291,4 +287,4 @@ const deleteUser = async (req, res, next) => {
  }
 };
 
-export { assistents, addUser, updateUser, deleteUser,userById };
+export { addUser, updateUser, deleteUser,userById };
