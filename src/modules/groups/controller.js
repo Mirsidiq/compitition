@@ -8,6 +8,7 @@ import { findUser } from "../../middlewares/checkToken.js";
 import { verify } from "../../utils/jwt.js";
 import { HOST } from "../../config/config.js";
 import { DirectionsModel } from "../directions/model.js";
+import { AssistentsModel } from "../assistents/model.js";
 const groups = async (req, res, next) => {
   try {
     const token = req.headers?.token;
@@ -19,30 +20,43 @@ const groups = async (req, res, next) => {
         let temp = await findUser(decode);
       if (temp.role=="admin") {
         const data = await GroupsModel.findAll({include:[DirectionsModel]});
+        // for(let item of data){
+        //   item.assistent_ref_id=assistent
+        // }
         data.length > 0
           ? res.status(200).json({
             status:200,
               message: "groups",
-              data,
+              data
             })
           : res.status(404).json({
             status:404,
               message: "not found",
-              data,
+              data:[]
             });
       } else if (temp.role=="assistent") {
         const users = await UsersModel.findOne({
           where: {
             user_id: temp.user_id,
           },
-          include: [GroupsModel],
-          attributes: ["user_id", "first_name", "last_name",'image'],
+          attributes: ["user_id", "firstname", "lastname",'image'],
         });
+        const assistent=await AssistentsModel.findOne({
+          where:{
+            user_ref_id:users.user_id
+          },
+          attributes:["assistent_id"]
+        })
+        const groups=await GroupsModel.findAll({
+          where:{
+            assistent_ref_id:assistent.assistent_id
+          }
+        })
         users
           ? res.status(200).json({
             status:200,
               message: "success",
-              data: users,
+              data: groups,
             })
           : next(new customError(404, "not found"));
       }
@@ -62,15 +76,15 @@ const getById = async (req, res, next) => {
   try {
     const { id } = req.params;
     let data = await GroupsModel.findByPk(id, {
-      include: [UsersModel,DirectionsModel]
+      include: [DirectionsModel]
     });
-    const findAssistent=await UsersModel.findOne({
-      where:{
-        role:'assistent',
-        group_ref_id:id
-      }
-    })
-    data.assistent=`${findAssistent.first_name[0].toUpperCase()+findAssistent.first_name.slice(1)} ${findAssistent.last_name[0].toUpperCase()+findAssistent.last_name.slice(1)}`
+    // const findAssistent=await UsersModel.findOne({
+    //   where:{
+    //     role:'assistent',
+    //     group_ref_id:id
+    //   }
+    // })
+    // data.assistent=`${findAssistent.first_name[0].toUpperCase()+findAssistent.first_name.slice(1)} ${findAssistent.last_name[0].toUpperCase()+findAssistent.last_name.slice(1)}`
 
     data
       ? res.status(200).json({
@@ -103,10 +117,10 @@ const addGroup = async (req, res, next) => {
    temp.mv(uploadPath,async err=>{
     if(err)return next(new customError(500,err.message))
     try {
-      const { dir_ref_id, gr_number, teacher, assistent,days,start_time,created_at,room } = req.body;
-    let daysArr=days.slice(1,days.length-1).split(',')
+      const { dir_ref_id, gr_number, teacher, assistent,days,start_time,end_time,created_at,room } = req.body;
+      let daysArr=typeof days=="object" ? days :days.slice(1,days.length-1).split(',')
     const newGroup = await GroupsModel.create({
-      dir_ref_id, gr_number, teacher, assistent,days:daysArr,start_time,created_at,room ,image:`${HOST}/${salt}`
+      dir_ref_id, gr_number, teacher, assistent_ref_id:assistent,days:daysArr,start_time,end_time,created_at,room ,image:`${HOST}/${salt}`
     },{
       returning:true
     });

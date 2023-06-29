@@ -1,6 +1,7 @@
 import { DataTypes,ENUM } from "sequelize";
 import {sequelize} from "../../utils/sequelize.js";
 import { DirectionsModel } from "../directions/model.js";
+import { GroupsModel } from "../groups/model.js";
 // import { IncomesModel } from "../incomes/model.js";
 const AssistentsModel=sequelize.define("assistents",{
   assistent_id:{
@@ -27,7 +28,12 @@ const AssistentsModel=sequelize.define("assistents",{
   timestamps:false,
   freezeTableName:true,
 })
-
+AssistentsModel.hasMany(GroupsModel,{
+  foreignKey:'assistent_ref_id'
+})
+GroupsModel.belongsTo(AssistentsModel,{
+  foreignKey:"assistent_ref_id"
+})
 // UsersModel.hasMany(IncomesModel,{
 //   foreignKey:"user_ref_id"
 // })

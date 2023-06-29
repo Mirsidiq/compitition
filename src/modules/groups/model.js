@@ -21,7 +21,7 @@ const GroupsModel=sequelize.define("groups",{
   type:DataTypes.STRING(64),
   allowNull:false
  },
- assistent:{
+ assistent_ref_id:{
   type:DataTypes.BIGINT,
   allowNull:false
  },
@@ -38,6 +38,10 @@ const GroupsModel=sequelize.define("groups",{
   allowNull:false,
  },
  start_time:{
+  type:DataTypes.TIME,
+  allowNull:false
+ },
+ end_time:{
   type:DataTypes.TIME,
   allowNull:false
  },

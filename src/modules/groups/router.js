@@ -6,7 +6,7 @@ const router=Router()
 
 router.get("/groups",groups)
 router.get("/groups/:id",checkParamsId,getById)
-router.post("/group/add",checkAdminToken,addGroup)
+router.post("/groups/add",checkAdminToken,addGroup)
 router.put("/group/put/:id",checkAdminToken,checkParamsId,updateGroup)
 router.delete("/groups/:id",checkAdminToken,checkParamsId,deleteGroup)
 

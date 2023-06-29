@@ -2,7 +2,7 @@
 // import { DepartsModel } from "./departments/model.js";
 import { DirectionsModel } from "./directions/model.js";
 // import { PositionsModel } from "./positions/model.js";
-// import { GroupsModel } from "./groups/model.js";
+import { GroupsModel } from "./groups/model.js";
 import { UsersModel } from "./users/model.js";
 import { AssistentsModel } from "./assistents/model.js";
 // import { IncomesModel } from "./incomes/model.js";
@@ -14,7 +14,7 @@ export default [
   // DepartsModel,
   DirectionsModel,
   // PositionsModel,
-  // GroupsModel,s
+  GroupsModel,
   UsersModel
   // IncomesModel,
   // OutlayModel,
