@@ -10,7 +10,8 @@ import {
   UserLoginBody,
   checkDirectionBodyUpdate,
   checkAssistentBody,
-  checkPagination
+  checkPagination,
+  checkStudentBody
 } from "../validation/validate.js";
 
 const checkParamsId = (req, _, next) => {
@@ -41,6 +42,11 @@ const checkPositionBodyMiddleware = (req, _, next) => {
 };
 const checkAssistentBodyMiddleware = (req, _, next) => {
   const {error,__}=checkAssistentBody.validate(req.body);
+  if (error)  next(new customError(400, error.message.replaceAll('"', "")));
+  next(); 
+}
+const checkStudentBodyMiddleware = (req, _, next) => {
+  const {error,__}=checkStudentBody.validate(req.body);
   if (error)  next(new customError(400, error.message.replaceAll('"', "")));
   next(); 
 }
@@ -80,5 +86,6 @@ export {
   checkOutlaysBodyMiddleware,
   UserLoginBodyMiddleware,
   checkAssistentBodyMiddleware,
+  checkStudentBodyMiddleware,
   checkPaginationMiddleware
 };
