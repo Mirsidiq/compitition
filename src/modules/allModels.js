@@ -2,6 +2,7 @@
 // import { DepartsModel } from "./departments/model.js";
 import { DirectionsModel } from "./directions/model.js";
 // import { PositionsModel } from "./positions/model.js";
+import { StudentsModel } from "./students/model.js";
 import { GroupsModel } from "./groups/model.js";
 import { UsersModel } from "./users/model.js";
 import { AssistentsModel } from "./assistents/model.js";
@@ -10,6 +11,7 @@ import { AssistentsModel } from "./assistents/model.js";
 // import { ChecksModel } from "./check/model.js";
 export default [
   AssistentsModel,
+  StudentsModel,
   // CenterModel,
   // DepartsModel,
   DirectionsModel,

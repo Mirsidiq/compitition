@@ -51,7 +51,17 @@ const checkAssistentBody = Joi.object({
   gender: Joi.string().valid('1','2').required(),
   username:Joi.string().required(),
   age:Joi.number().integer().required(),
-  dir_ref_id:Joi.number().integer().required()
+  dir_ref_id:Joi.number().integer().required(),
+});
+const checkStudentBody = Joi.object({
+  firstname: Joi.string().max(20).required(),
+  lastname: Joi.string().max(20).required(),
+  contact: Joi.string().regex(/^\+?[1-9][0-9]{7,11}$/).required(),
+  gender: Joi.string().valid('1','2').required(),
+  username:Joi.string().required(),
+  age:Joi.number().integer().required(),
+  dir_ref_id:Joi.number().integer().required(),
+  gr_ref_id:Joi.number().integer().required(),
 });
 const checkIncomesBody = Joi.object({
   user_ref_id: Joi.number().integer().required(),
@@ -81,5 +91,6 @@ export {
   checkOutlaysBody,
   UserLoginBody,
   checkAssistentBody,
+  checkStudentBody,
   checkPagination
 };

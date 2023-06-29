@@ -6,6 +6,7 @@ import directions from "./directions/router.js";
 import groups from "./groups/router.js";
 import users from "./users/router.js";
 import assistents from "./assistents/router.js"
+import students from "./students/router.js"
 // import incomes from "./incomes/router.js";
 // import outlays from "./outlay/router.js";
 // import checks from "./check/router.js";
@@ -17,7 +18,8 @@ export default [
 //   positions,
   groups,
   users,
-  assistents
+  assistents,
+  students
 //   incomes,
 //   outlays,
 //   checks,
