@@ -151,9 +151,8 @@ const addGroup = async (req, res, next) => {
     if(err)return next(new customError(500,err.message))
     try {
       const { dir_ref_id, gr_number, teacher, assistent,days,start_time,end_time,created_at,room } = req.body;
-      let daysArr=typeof days=="object" ? days :days.slice(1,days.length-1).split(',')
     const newGroup = await GroupsModel.create({
-      dir_ref_id, gr_number, teacher, assistent_ref_id:assistent,days:daysArr,start_time,end_time,created_at,room ,image:`${HOST}/${salt}`
+      dir_ref_id, gr_number, teacher, assistent_ref_id:assistent,days,start_time,end_time,created_at,room ,image:`${HOST}/${salt}`
     },{
       returning:true
     });

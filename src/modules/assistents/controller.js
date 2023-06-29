@@ -15,6 +15,9 @@ import { DirectionsModel } from "../directions/model.js";
 
 const assistents = async (req, res, next) => {
   try {
+    let {page,limit}=req.query
+    page=page || 1,
+    limit=limit ||10
     const { username, lastname, contact } = req.query;
     if (username && username != "") {
       const user = await UsersModel.findOne({
@@ -31,7 +34,10 @@ const assistents = async (req, res, next) => {
           },
           attributes: ["assistent_id"],
           include: [UsersModel,DirectionsModel],
+          raw:true,
+          nest:true
         });
+        delete assistent.user.password
         res.status(200).json({
           status: 200,
           message: "success",
@@ -60,7 +66,10 @@ const assistents = async (req, res, next) => {
           },
           attributes: ["assistent_id"],
           include: [UsersModel,DirectionsModel],
+          nest:true,
+          raw:true
         });
+        delete assistent.user.password
         res.status(200).json({
           status: 200,
           message: "success",
@@ -74,22 +83,29 @@ const assistents = async (req, res, next) => {
         });
       }
     } else if (lastname && lastname != "") {
-      const user = await UsersModel.findOne({
+      let user = await UsersModel.findAll({
         where: {
           lastname,
           role: "assistent",
           active:true
         },
         attributes: ["user_id"],
+        nest:true,
+        raw:true
       });
-      if (user) {
-        const assistent = await AssistentsModel.findOne({
+      if (user.length>0) {
+        let assistent = await AssistentsModel.findAll({
           where: {
-            user_ref_id: user.user_id,
+            user_ref_id:user.map(e=>e.user_id),
           },
           attributes: ["assistent_id"],
           include: [UsersModel,DirectionsModel],
+          limit,
+          offset:(page-1)*limit,
+          nest:true,
+          raw:true
         });
+        assistent=assistent.filter(e=>delete e.user.password)
         res.status(200).json({
           status: 200,
           message: "success",
@@ -99,7 +115,7 @@ const assistents = async (req, res, next) => {
         res.status(404).json({
           status: 404,
           message: "not found",
-          data: {},
+          data: [],
         });
       }
     } else if (contact && contact != "") {
@@ -111,13 +127,16 @@ const assistents = async (req, res, next) => {
         attributes: ["user_id"],
       });
       if (user) {
-        const assistent = await AssistentsModel.findOne({
+        let assistent = await AssistentsModel.findOne({
           where: {
             user_ref_id: user.user_id,
           },
           attributes: ["assistent_id"],
           include: [UsersModel,DirectionsModel],
+          raw:true,
+          nest:true
         });
+        delete assistent.user.password
         res.status(200).json({
           status: 200,
           message: "success",
@@ -131,24 +150,31 @@ const assistents = async (req, res, next) => {
         });
       }
     } else {
-      const assistent = await AssistentsModel.findAll({
+      let assistent = await AssistentsModel.findAll({
         include: [UsersModel,DirectionsModel],
         attributes:["assistent_id"],
         where:{
           active:true
-        }
+        },
+        raw:true,
+        nest:true
       });
-      assistent.length > 0
-        ? res.status(200).json({
+      if(assistent.length > 0)
+      {
+        assistent=assistent.filter(e=>delete e.user.password)
+          res.status(200).json({
             status: 200,
             message: "success",
             data: assistent,
           })
-        : res.status(404).json({
-            status: 404,
-            message: "not found",
-            data: [],
-          });
+      }
+       else{
+        res.status(404).json({
+          status: 404,
+          message: "not found",
+          data: [],
+        });
+       }
     }
   } catch (error) {
     next(new customError(500, error.message));

@@ -6,7 +6,7 @@ const router=Router()
 
 router.get("/groups",checkPaginationMiddleware,groups)
 router.get("/groups/:id",checkParamsId,getById)
-router.post("/groups/add",checkAdminToken,addGroup)
+router.post("/groups/add",checkAdminToken,checkGroupsBodyMiddleware,addGroup)
 router.put("/group/put/:id",checkAdminToken,checkParamsId,updateGroup)
 router.delete("/groups/delete/:id",checkAdminToken,checkParamsId,deleteGroup)
 

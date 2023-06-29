@@ -28,10 +28,15 @@ const checkPositionBody = Joi.object({
   salary: Joi.number().allow(null),
 });
 const checkGroupsBody = Joi.object({
-  dir_ref_id: Joi.number().integer().required(),
-  gr_number: Joi.number().integer().required(),
-  begin_date: Joi.string().allow(null),
-  end_date: Joi.string().allow(null),
+  dir_ref_id:Joi.number().integer().required(),
+  gr_number:Joi.string().max(20).required(),
+   teacher:Joi.string().max(64).required(),
+   assistent:Joi.number().integer().required(),
+   days:Joi.array().items(Joi.string().valid('dushanba','seshanba','chorshanba','payshanba','juma','shanba')).required(),
+   start_time:Joi.string().max(10).required(),
+   end_time:Joi.string().max(10).required(),
+   created_at:Joi.date().allow(null),
+   room:Joi.string().max(64).required(), 
 });
 const checkUsersBody = Joi.object({
   firstname: Joi.string().max(20).required(),
