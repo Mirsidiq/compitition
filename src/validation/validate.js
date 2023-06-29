@@ -2,18 +2,16 @@ import Joi from "joi";
 const checkId = Joi.object({
   id: Joi.number().integer().required(),
 });
+const checkPagination = Joi.object({
+  limit: Joi.number().integer(),
+  page:Joi.number().integer()
+});
 const checkDirection = Joi.object({
   directions: Joi.string().max(30),
 });
 const checkPosition = Joi.object({
   positions: Joi.string().max(30),
 });
-const checkDepartment = Joi.object({
-  center_ref_id: Joi.number().integer().required(),
-  dep_name: Joi.string().max(60).required(),
-  create_at: Joi.string().max(60).allow(null),
-  delete_at: Joi.string().allow(null),
-}).required();
 const checkDirectionBody = Joi.object({
   dir_name: Joi.string().max(60).required(),
   salary: Joi.number().integer().required(),
@@ -66,7 +64,6 @@ const UserLoginBody = Joi.object({
   contact: Joi.string().required(),
 });
 export {
-  checkDepartment,
   checkId,
   checkDirection,
   checkPosition,
@@ -78,5 +75,6 @@ export {
   checkIncomesBody,
   checkOutlaysBody,
   UserLoginBody,
-  checkAssistentBody
+  checkAssistentBody,
+  checkPagination
 };

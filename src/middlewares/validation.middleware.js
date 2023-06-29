@@ -1,6 +1,5 @@
 import { customError } from "../exception/customError.js";
 import {
-  checkDepartment,
   checkId,
   checkDirectionBody,
   checkUsersBody,
@@ -11,6 +10,7 @@ import {
   UserLoginBody,
   checkDirectionBodyUpdate,
   checkAssistentBody,
+  checkPagination
 } from "../validation/validate.js";
 
 const checkParamsId = (req, _, next) => {
@@ -18,8 +18,8 @@ const checkParamsId = (req, _, next) => {
   if (error) next(new customError(400, error.message.replaceAll('"', "")));
   next();
 };
-const checkDepartmentBody = (req, _, next) => {
-  const { error, __ } = checkDepartment.validate(req.body);
+const checkPaginationMiddleware = (req, _, next) => {
+  const { error, __ } = checkPagination.validate(req.query);
   if (error) next(new customError(400, error.message.replaceAll('"', "")));
   next();
 };
@@ -71,7 +71,6 @@ const UserLoginBodyMiddleware = (req, _, next) => {
 };
 export {
   checkParamsId,
-  checkDepartmentBody,
   checkDirectionBodyMiddleware,
   checkDirectionBodyUpdateMiddleware,
   checkPositionBodyMiddleware,
@@ -80,5 +79,6 @@ export {
   checkIncomesBodyMiddleware,
   checkOutlaysBodyMiddleware,
   UserLoginBodyMiddleware,
-  checkAssistentBodyMiddleware
+  checkAssistentBodyMiddleware,
+  checkPaginationMiddleware
 };

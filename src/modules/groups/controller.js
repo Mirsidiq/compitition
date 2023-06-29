@@ -11,6 +11,9 @@ import { DirectionsModel } from "../directions/model.js";
 import { AssistentsModel } from "../assistents/model.js";
 const groups = async (req, res, next) => {
   try {
+    let {page,limit}=req.query
+    page=page || 1
+        limit=limit || 10
     const token = req.headers?.token;
     if (token) {
       const decode = await verify(token).catch((err) =>
@@ -19,21 +22,25 @@ const groups = async (req, res, next) => {
       if(decode){
         let temp = await findUser(decode);
       if (temp.role=="admin") {
-        const data = await GroupsModel.findAll({include:[DirectionsModel]});
-        // for(let item of data){
-        //   item.assistent_ref_id=assistent
-        // }
-        data.length > 0
-          ? res.status(200).json({
+        let data = await GroupsModel.findAll({include:[DirectionsModel],raw:true,nest:true,
+          attributes:{exclude:["dir_ref_id","assistent_ref_id"]},
+          limit:limit,
+          offset:(page-1)*limit
+        });
+        if(data.length > 0){
+          res.status(200).json({
             status:200,
               message: "groups",
               data
             })
-          : res.status(404).json({
+          }
+          else{
+            res.status(404).json({
             status:404,
               message: "not found",
               data:[]
             });
+          }
       } else if (temp.role=="assistent") {
         const users = await UsersModel.findOne({
           where: {
@@ -50,7 +57,10 @@ const groups = async (req, res, next) => {
         const groups=await GroupsModel.findAll({
           where:{
             assistent_ref_id:assistent.assistent_id
-          }
+          },
+          attributes:{exclude:["assistent_ref_id","dir_ref_id"]},
+          limit:limit,
+          offset:(page-1)*limit
         })
         users
           ? res.status(200).json({
@@ -68,33 +78,56 @@ const groups = async (req, res, next) => {
       }
       }
     }
+    else{
+      next(new customError(401,'unauthorized'))
+    }
   } catch (error) {
     next(new customError(500, error.message));
   }
 };
 const getById = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    let data = await GroupsModel.findByPk(id, {
-      include: [DirectionsModel]
-    });
-    // const findAssistent=await UsersModel.findOne({
-    //   where:{
-    //     role:'assistent',
-    //     group_ref_id:id
-    //   }
-    // })
-    // data.assistent=`${findAssistent.first_name[0].toUpperCase()+findAssistent.first_name.slice(1)} ${findAssistent.last_name[0].toUpperCase()+findAssistent.last_name.slice(1)}`
-
-    data
-      ? res.status(200).json({
-          message: "groups",
-          data:data
-        })
-      : res.status(404).json({
-          message: "not found",
-          data,
+    const token = req.headers?.token;
+    if(token){
+      const { id } = req.params;
+      const decode = await verify(token).catch((err) =>
+      next(new customError(400, err.message))
+    );
+    if(decode){
+      let temp = await findUser(decode);
+      if(temp.role=="admin" || temp.role=="assistent"){
+        let data = await GroupsModel.findByPk(id, {
+          include: [DirectionsModel,AssistentsModel],
+          attributes:{exclude:["dir_ref_id","assistent_ref_id"]}
         });
+      if(data){
+        data=data.get(({plain:true}))
+        const findUser=await UsersModel.findByPk(data.assistent.user_ref_id,{
+          attributes:["firstname",'lastname'],
+          raw:true
+        })
+        delete data.assistent
+        data.assistent=findUser
+         res.status(200).json({
+              message: "groups",
+              data,
+            })
+      }
+      else{
+        res.status(404).json({
+          message: "not found",
+          data:[]
+        });
+      }
+      }
+      else{
+        next(new customError(403,'you have no permission'))
+      }
+    }
+    }
+    else{
+      next(new customError(401,'unauthorized'))
+    }
   } catch (error) {
     next(new customError(500, error.message));
   }
@@ -171,7 +204,7 @@ const updateGroup = async (req, res, next) => {
       if(err)return next(new customError(500,err.message))
       try {
         const { dir_ref_id, gr_number, teacher, assistent,days,start_time,created_at,room } = req.body;
-      let daysArr=days.slice(1,days.length-1).split(',')
+      let daysArr=typeof days==="string" ? days.slice(1,days.length-1).split(','):days
       const newGroup = await GroupsModel.update({
         dir_ref_id, gr_number, teacher, assistent,days:daysArr,start_time,created_at,room ,image:`${HOST}/${salt}`
       },{
