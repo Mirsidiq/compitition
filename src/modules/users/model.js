@@ -1,6 +1,7 @@
 import { DataTypes,ENUM } from "sequelize";
 import {sequelize} from "../../utils/sequelize.js";
 import { AssistentsModel } from "../assistents/model.js";
+import { DirectionsModel } from "../directions/model.js";
 // import { IncomesModel } from "../incomes/model.js";
 const UsersModel=sequelize.define("users",{
   user_id:{

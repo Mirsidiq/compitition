@@ -10,6 +10,7 @@ import { findUser } from "../../middlewares/checkToken.js";
 import { verify } from "../../utils/jwt.js";
 import { HOST } from "../../config/config.js";
 import { UsersModel } from "../users/model.js";
+import { DirectionsModel } from "../directions/model.js";
 // import { DirectionsModel } from "../directions/model.js";
 
 const assistents = async (req, res, next) => {
@@ -29,7 +30,7 @@ const assistents = async (req, res, next) => {
             user_ref_id: user.user_id,
           },
           attributes: ["assistent_id"],
-          include: [UsersModel],
+          include: [UsersModel,DirectionsModel],
         });
         res.status(200).json({
           status: 200,
@@ -58,7 +59,7 @@ const assistents = async (req, res, next) => {
             user_ref_id: user.user_id,
           },
           attributes: ["assistent_id"],
-          include: [UsersModel],
+          include: [UsersModel,DirectionsModel],
         });
         res.status(200).json({
           status: 200,
@@ -87,7 +88,7 @@ const assistents = async (req, res, next) => {
             user_ref_id: user.user_id,
           },
           attributes: ["assistent_id"],
-          include: [UsersModel],
+          include: [UsersModel,DirectionsModel],
         });
         res.status(200).json({
           status: 200,
@@ -115,7 +116,7 @@ const assistents = async (req, res, next) => {
             user_ref_id: user.user_id,
           },
           attributes: ["assistent_id"],
-          include: [UsersModel],
+          include: [UsersModel,DirectionsModel],
         });
         res.status(200).json({
           status: 200,
@@ -131,7 +132,7 @@ const assistents = async (req, res, next) => {
       }
     } else {
       const assistent = await AssistentsModel.findAll({
-        include: [UsersModel],
+        include: [UsersModel,DirectionsModel],
         attributes:["assistent_id"],
         where:{
           active:true
@@ -316,7 +317,7 @@ const assistentById = async (req, res, next) => {
     const { id } = req.params;
 const assistent=await AssistentsModel.findByPk(id,{
   attributes:["assistent_id","active"],
-  include:[UsersModel],
+  include:[UsersModel,DirectionsModel],
 })
     assistent
       ? res.status(200).json({

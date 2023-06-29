@@ -1,6 +1,8 @@
 import { DataTypes } from "sequelize";
 import {sequelize} from "../../utils/sequelize.js";
-import { GroupsModel } from "../groups/model.js";
+import { UsersModel } from "../users/model.js";
+import { AssistentsModel } from "../assistents/model.js";
+// import { GroupsModel } from "../groups/model.js";
 const DirectionsModel=sequelize.define("directions",{
  dir_id:{
   type:DataTypes.BIGINT,
@@ -28,6 +30,12 @@ const DirectionsModel=sequelize.define("directions",{
 {
   timestamps:false,
   freezeTableName:true,
+})
+DirectionsModel.hasOne(AssistentsModel,{
+  foreignKey:"dir_ref_id"
+})
+AssistentsModel.belongsTo(DirectionsModel,{
+  foreignKey:"dir_ref_id"
 })
 // DirectionsModel.hasMany(GroupsModel,{
 //   foreignKey:"dir_ref_id"
