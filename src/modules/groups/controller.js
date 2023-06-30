@@ -98,7 +98,7 @@ const getById = async (req, res, next) => {
       let temp = await findUser(decode);
       if(temp.role=="admin" || temp.role=="assistent"){
         let data = await GroupsModel.findByPk(id, {
-          include: [DirectionsModel,AssistentsModel,StudentsModel],
+          include: [DirectionsModel,AssistentsModel],
           attributes:{exclude:["dir_ref_id","assistent_ref_id"]}
         });
       if(data){

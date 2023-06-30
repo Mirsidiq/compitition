@@ -307,28 +307,7 @@ const updateStudent = async (req, res, next) => {
   next(new customError(500,error.message))
  }
 };
-const assistentById = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-const assistent=await AssistentsModel.findByPk(id,{
-  attributes:["assistent_id","active"],
-  include:[UsersModel,DirectionsModel],
-})
-    assistent
-      ? res.status(200).json({
-          status: 200,
-          message: "success",
-          data: assistent,
-        })
-      : res.status(404).json({
-          status: 404,
-          message: "not found",
-          data: {},
-        });
-  } catch (error) {
-    next(new customError(500, error.message));
-  }
-};
+
 const deleteStudent = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -353,4 +332,4 @@ const deleteStudent = async (req, res, next) => {
   }
 };
 
-export { students,addStudent, updateStudent, deleteStudent, assistentById,studentByGroupId,studentById };
+export { students,addStudent, updateStudent, deleteStudent,studentByGroupId,studentById };
