@@ -9,6 +9,7 @@ import { verify } from "../../utils/jwt.js";
 import { HOST } from "../../config/config.js";
 import { DirectionsModel } from "../directions/model.js";
 import { AssistentsModel } from "../assistents/model.js";
+import { StudentsModel } from "../students/model.js";
 const groups = async (req, res, next) => {
   try {
     let {page,limit}=req.query
@@ -97,7 +98,7 @@ const getById = async (req, res, next) => {
       let temp = await findUser(decode);
       if(temp.role=="admin" || temp.role=="assistent"){
         let data = await GroupsModel.findByPk(id, {
-          include: [DirectionsModel,AssistentsModel],
+          include: [DirectionsModel,AssistentsModel,StudentsModel],
           attributes:{exclude:["dir_ref_id","assistent_ref_id"]}
         });
       if(data){

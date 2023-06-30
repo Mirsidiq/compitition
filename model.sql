@@ -1,6 +1,6 @@
-update users set
+update students set
 active=true
-where user_id=3
+where student_id=1;
 -- last_name="Saparov",
 -- gender=1,
 -- contact="+998907971860",
@@ -10,7 +10,7 @@ where user_id=3
 
 insert into users(firstname,lastname,age,gender,contact,image,username,role,password)
 values('mirsidiq','mirzokirov',21,'1','+998903971860','asdasldnalsndkadnlanda','mirsidiq_mirzokirov','admin','+998903971860');
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJpYXQiOjE2ODgwMTU0MzYsImV4cCI6MTY4ODEwMTgzNn0.41D9dAGdYDTcfpxlbSD9toyxDs9Ocqb5RgIer6oY2mY
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJpYXQiOjE2ODgxMDIwNjAsImV4cCI6MTY4ODE4ODQ2MH0.e0NntWqn4T0TmlWAoPYluuw5Y3oux6Vy2z1a2gnt_JM
 
 
 

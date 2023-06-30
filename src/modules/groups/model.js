@@ -2,6 +2,7 @@ import { DATE, DataTypes } from "sequelize";
 import {sequelize} from "../../utils/sequelize.js";
 import { UsersModel } from "../users/model.js";
 import { DirectionsModel } from "../directions/model.js";
+import { StudentsModel } from "../students/model.js";
 const GroupsModel=sequelize.define("groups",{
   gr_id:{
   type:DataTypes.BIGINT,
@@ -54,6 +55,12 @@ const GroupsModel=sequelize.define("groups",{
 {
   timestamps:false,
   freezeTableName:true,
+})
+GroupsModel.hasMany(StudentsModel,{
+  foreignKey:"gr_ref_id"
+})
+StudentsModel.belongsTo(GroupsModel,{
+  foreignKey:"gr_ref_id"
 })
 // GroupsModel.hasMany(UsersModel,{
 //   foreignKey:"group_ref_id"

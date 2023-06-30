@@ -11,161 +11,73 @@ import { HOST } from "../../config/config.js";
 import { UsersModel } from "../users/model.js";
 import { DirectionsModel } from "../directions/model.js";
 import { StudentsModel } from "./model.js";
+import { GroupsModel } from "../groups/model.js";
 // import { DirectionsModel } from "../directions/model.js";
 
-const assistents = async (req, res, next) => {
+const students = async (req, res, next) => {
   try {
-    let {page,limit}=req.query
-    page=page || 1,
-    limit=limit ||10
-    const { username, lastname, contact } = req.query;
-    if (username && username != "") {
-      const user = await UsersModel.findOne({
-        where: {
-          username,
-          active:true
-        },
-        attributes: ["user_id"],
-      });
-      if (user) {
-        const assistent = await AssistentsModel.findOne({
-          where: {
-            user_ref_id: user.user_id,
-          },
-          attributes: ["assistent_id"],
-          include: [UsersModel,DirectionsModel],
-          raw:true,
-          nest:true
-        });
-        delete assistent.user.password
-        res.status(200).json({
-          status: 200,
-          message: "success",
-          data: assistent,
-        });
-      } else {
-        res.status(404).json({
-          status: 404,
-          message: "not found",
-          data: {},
-        });
-      }
-    } else if (lastname && lastname != "" && contact && contact != "") {
-      const user = await UsersModel.findOne({
-        where: {
-          lastname,
-          contact:`+${contact.trim()}`,
-          active:true
-        },
-        attributes: ["user_id"],
-      });
-      if (user) {
-        const assistent = await AssistentsModel.findOne({
-          where: {
-            user_ref_id: user.user_id,
-          },
-          attributes: ["assistent_id"],
-          include: [UsersModel,DirectionsModel],
-          nest:true,
-          raw:true
-        });
-        delete assistent.user.password
-        res.status(200).json({
-          status: 200,
-          message: "success",
-          data: assistent,
-        });
-      } else {
-        res.status(404).json({
-          status: 404,
-          message: "not found",
-          data: {},
-        });
-      }
-    } else if (lastname && lastname != "") {
-      let user = await UsersModel.findAll({
-        where: {
-          lastname,
-          role: "assistent",
-          active:true
-        },
-        attributes: ["user_id"],
-        nest:true,
-        raw:true
-      });
-      if (user.length>0) {
-        let assistent = await AssistentsModel.findAll({
-          where: {
-            user_ref_id:user.map(e=>e.user_id),
-          },
-          attributes: ["assistent_id"],
-          include: [UsersModel,DirectionsModel],
-          limit,
-          offset:(page-1)*limit,
-          nest:true,
-          raw:true
-        });
-        assistent=assistent.filter(e=>delete e.user.password)
-        res.status(200).json({
-          status: 200,
-          message: "success",
-          data: assistent,
-        });
-      } else {
-        res.status(404).json({
-          status: 404,
-          message: "not found",
-          data: [],
-        });
-      }
-    } else if (contact && contact != "") {
-      const user = await UsersModel.findOne({
-        where: {
-          contact:`+${contact.trim()}`,
-          active:true
-        },
-        attributes: ["user_id"],
-      });
-      if (user) {
-        let assistent = await AssistentsModel.findOne({
-          where: {
-            user_ref_id: user.user_id,
-          },
-          attributes: ["assistent_id"],
-          include: [UsersModel,DirectionsModel],
-          raw:true,
-          nest:true
-        });
-        delete assistent.user.password
-        res.status(200).json({
-          status: 200,
-          message: "success",
-          data: assistent,
-        });
-      } else {
-        res.status(404).json({
-          status: 404,
-          message: "not found",
-          data: {},
-        });
-      }
-    } else {
-      let assistent = await AssistentsModel.findAll({
-        include: [UsersModel,DirectionsModel],
-        attributes:["assistent_id"],
+      let student = await StudentsModel.findAll({
+        include: [UsersModel,DirectionsModel,GroupsModel],
+        attributes:["student_id"],
         where:{
           active:true
         },
         raw:true,
         nest:true
       });
-      if(assistent.length > 0)
+      if(student.length > 0)
       {
-        assistent=assistent.filter(e=>delete e.user.password)
+        student=student.filter(e=>{
+          delete e.user.password
+          delete e.group.dir_ref_id
+          delete e.group.assistent_ref_id
+          return e
+        })
           res.status(200).json({
             status: 200,
             message: "success",
-            data: assistent,
+            data: student,
+          })
+      }
+       else{
+        res.status(404).json({
+          status: 404,
+          message: "not found",
+          data: [],
+        });
+       }
+  } catch (error) {
+    next(new customError(500, error.message));
+  }
+};
+const studentByGroupId=async(req,res,next)=>{
+ try {
+  const token = req.headers?.token;
+  if(token){
+    const { id } = req.params;
+    const decode = await verify(token).catch((err) =>
+    next(new customError(400, err.message))
+  );
+  if(decode){
+    let temp = await findUser(decode);
+    if(temp.role=="admin" || temp.role=="assistent"){
+      let students = await StudentsModel.findAll({
+        include: [UsersModel],
+        attributes:["student_id"],
+        where:{
+          gr_ref_id:id,
+          active:true
+        },
+        raw:true,
+        nest:true
+      });
+      if(students.length > 0)
+      {
+        students=students.filter(e=>delete e.user.password)
+          res.status(200).json({
+            status: 200,
+            message: "success",
+            data: students,
           })
       }
        else{
@@ -176,11 +88,64 @@ const assistents = async (req, res, next) => {
         });
        }
     }
-  } catch (error) {
-    next(new customError(500, error.message));
+    else{
+      next(new customError(403,'you have no permission'))
+    }
   }
-};
-
+}
+  else{
+    next(new customError(401,'unauthorized'));
+  }
+ } catch (error) {
+  next(new customError(500,error.message))
+ }
+}
+const studentById=async(req,res,next)=>{
+  try {
+    const token = req.headers?.token;
+    if(token){
+      const { id } = req.params;
+      const decode = await verify(token).catch((err) =>
+      next(new customError(400, err.message))
+    );
+    if(decode){
+      let temp = await findUser(decode);
+      if(temp.role=="admin" || temp.role=="assistent"){
+        let students = await StudentsModel.findByPk(id,{
+          include: [UsersModel],
+          attributes:["student_id"],
+          raw:true,
+          nest:true
+        });
+        if(students)
+        {
+          delete students.user.password
+            res.status(200).json({
+              status: 200,
+              message: "success",
+              data: students,
+            })
+        }
+         else{
+          res.status(404).json({
+            status: 404,
+            message: "not found",
+            data: {},
+          });
+         }
+      }
+      else{
+        next(new customError(403,'you have no permission'))
+      }
+    }
+  }
+    else{
+      next(new customError(401,'unauthorized'));
+    }
+   } catch (error) {
+    next(new customError(500,error.message))
+   }
+}
 const addStudent = async (req, res, next) => {
   try {
     if (!req.files) {
@@ -388,4 +353,4 @@ const deleteStudent = async (req, res, next) => {
   }
 };
 
-export { assistents,addStudent, updateStudent, deleteStudent, assistentById };
+export { students,addStudent, updateStudent, deleteStudent, assistentById,studentByGroupId,studentById };
