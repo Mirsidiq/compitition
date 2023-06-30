@@ -1,9 +1,7 @@
 import { DataTypes,ENUM } from "sequelize";
 import {sequelize} from "../../utils/sequelize.js";
 import { AssistentsModel } from "../assistents/model.js";
-import { DirectionsModel } from "../directions/model.js";
 import { StudentsModel } from "../students/model.js";
-// import { IncomesModel } from "../incomes/model.js";
 const UsersModel=sequelize.define("users",{
   user_id:{
   type:DataTypes.BIGINT,
@@ -81,12 +79,6 @@ UsersModel.hasOne(StudentsModel,{
 StudentsModel.belongsTo(UsersModel,{
   foreignKey:"user_ref_id"
 })
-// UsersModel.hasMany(IncomesModel,{
-//   foreignKey:"user_ref_id"
-// })
-// IncomesModel.belongsTo(UsersModel,{
-//   foreignKey:"user_ref_id"
-// })
 
 export{
   UsersModel

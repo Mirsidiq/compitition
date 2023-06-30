@@ -1,8 +1,7 @@
 import { Router } from "express";
 import {  updateStudent, addStudent, deleteStudent, students, studentByGroupId, studentById } from "./controller.js";
 import { checkAdminToken } from "../../middlewares/checkToken.js";
-// import { checkUsersBodyMiddleware } from "../../middlewares/validation.middleware.js";
-import {  checkAssistentBodyMiddleware, checkParamsId, checkStudentBodyMiddleware } from "../../middlewares/validation.middleware.js";
+import { checkParamsId, checkStudentBodyMiddleware } from "../../middlewares/validation.middleware.js";
 
 const router=Router()
 

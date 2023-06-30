@@ -62,12 +62,7 @@ GroupsModel.hasMany(StudentsModel,{
 StudentsModel.belongsTo(GroupsModel,{
   foreignKey:"gr_ref_id"
 })
-// GroupsModel.hasMany(UsersModel,{
-//   foreignKey:"group_ref_id"
-// })
-// UsersModel.belongsTo(GroupsModel,{
-//   foreignKey:"group_ref_id"
-// })
+
 export{
   GroupsModel
 }

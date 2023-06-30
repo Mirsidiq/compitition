@@ -9,7 +9,6 @@ import { verify } from "../../utils/jwt.js";
 import { HOST } from "../../config/config.js";
 import { DirectionsModel } from "../directions/model.js";
 import { AssistentsModel } from "../assistents/model.js";
-import { StudentsModel } from "../students/model.js";
 const groups = async (req, res, next) => {
   try {
     let {page,limit}=req.query

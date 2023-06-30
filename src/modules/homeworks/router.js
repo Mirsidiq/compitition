@@ -5,7 +5,6 @@ import { checkAssistentToken } from "../../middlewares/checkToken.js";
 
 const router=Router()
 
-// router.get("/departments",checkAdminToken,homeworksByStudentId)
 router.get("/homeworks/students/:id",checkParamsId,homeworksByStudentId)
 router.get("/homeworks/:id",checkParamsId,homeworkById)
 router.post("/homeworks",checkAssistentToken,addHomework)

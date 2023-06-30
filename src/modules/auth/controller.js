@@ -1,7 +1,6 @@
 import sha256 from "sha256";
 import { sign } from "../../utils/jwt.js";
 import { UsersModel } from "../users/model.js";
-import { checkAdmin,checkAssistent, checkStudent, checkTeacher } from "../../utils/checkAdmin.js";
 import { customError } from "../../exception/customError.js";
 const login = async (req, res, next) => {
   try {

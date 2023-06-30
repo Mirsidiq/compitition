@@ -6,8 +6,6 @@ import { checkAdminToken } from "../../middlewares/checkToken.js";
 const router=Router()
 
 router.get("/directions",directions)
-// router.get("/department/directions/:id",checkAdminToken,checkParamsId,getById)
-// router.get("/department",checkAdminToken,getByDirName)
 router.post("/direction/add",checkAdminToken,checkDirectionBodyMiddleware,addDirection)
 router.put("/direction/put/:id",checkAdminToken,checkParamsId,checkDirectionBodyUpdateMiddleware,updateDirection)
 router.delete("/direction/delete/:id",checkAdminToken,checkParamsId,deleteDirection)

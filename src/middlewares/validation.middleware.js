@@ -2,11 +2,7 @@ import { customError } from "../exception/customError.js";
 import {
   checkId,
   checkDirectionBody,
-  checkUsersBody,
-  checkPositionBody,
   checkGroupsBody,
-  checkIncomesBody,
-  checkOutlaysBody,
   UserLoginBody,
   checkDirectionBodyUpdate,
   checkAssistentBody,
@@ -35,11 +31,6 @@ const checkDirectionBodyUpdateMiddleware = (req, _, next) => {
   if (error) next(new customError(400, error.message.replaceAll('"', "")));
   next();
 };
-const checkPositionBodyMiddleware = (req, _, next) => {
-  const { error, __ } = checkPositionBody.validate(req.body);
-  if (error) next(new customError(400, error.message.replaceAll('"', "")));
-  next();
-};
 const checkAssistentBodyMiddleware = (req, _, next) => {
   const {error,__}=checkAssistentBody.validate(req.body);
   if (error)  next(new customError(400, error.message.replaceAll('"', "")));
@@ -55,21 +46,7 @@ const checkGroupsBodyMiddleware = (req, _, next) => {
   if (error) next(new customError(400, error.message.replaceAll('"', "")));
   next();
 };
-const checkUsersBodyMiddleware = (req, _, next) => {
-  const { error, __ } = checkUsersBody.validate(req.body);
-  if (error) next(new customError(400, error.message.replaceAll('"', "")));
-  next();
-};
-const checkIncomesBodyMiddleware = (req, _, next) => {
-  const { error, __ } = checkIncomesBody.validate(req.body);
-  if (error) next(new customError(400, error.message.replaceAll('"', "")));
-  next();
-};
-const checkOutlaysBodyMiddleware = (req, _, next) => {
-  const { error, __ } = checkOutlaysBody.validate(req.body);
-  if (error) next(new customError(400, error.message.replaceAll('"', "")));
-  next();
-};
+
 const UserLoginBodyMiddleware = (req, _, next) => {
   const { error, __ } = UserLoginBody.validate(req.body);
   if (error) next(new customError(400, error.message.replaceAll('"', "")));
@@ -79,11 +56,7 @@ export {
   checkParamsId,
   checkDirectionBodyMiddleware,
   checkDirectionBodyUpdateMiddleware,
-  checkPositionBodyMiddleware,
   checkGroupsBodyMiddleware,
-  checkUsersBodyMiddleware,
-  checkIncomesBodyMiddleware,
-  checkOutlaysBodyMiddleware,
   UserLoginBodyMiddleware,
   checkAssistentBodyMiddleware,
   checkStudentBodyMiddleware,

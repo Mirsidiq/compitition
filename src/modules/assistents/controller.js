@@ -3,15 +3,10 @@ import fs from "fs";
 import url from "url";
 import sha256 from "sha256";
 import { customError } from "../../exception/customError.js";
-// import { PositionsModel } from "../positions/model.js";
 import { AssistentsModel } from "./model.js";
-// import { GroupsModel } from "../groups/model.js";
-import { findUser } from "../../middlewares/checkToken.js";
-import { verify } from "../../utils/jwt.js";
 import { HOST } from "../../config/config.js";
 import { UsersModel } from "../users/model.js";
 import { DirectionsModel } from "../directions/model.js";
-// import { DirectionsModel } from "../directions/model.js";
 
 const assistents = async (req, res, next) => {
   try {
@@ -198,6 +193,7 @@ const addAssistent = async (req, res, next) => {
     }
     temp.mv(uploadPath, async (err) => {
       if (err) return next(new customError(500, err.message));
+     try {
       const {
         contact,
         gender,
@@ -241,6 +237,9 @@ const addAssistent = async (req, res, next) => {
               data: {},
             });
       }
+     } catch (error) {
+      next(new customError(500,error.message))
+     }
     });
   } catch (error) {
     next(new customError(500, error.message));
@@ -276,51 +275,55 @@ const updateAssistent = async (req, res, next) => {
     }
     temp.mv(uploadPath, async (err) => {
       if (err) return next(new customError(500, err.message));
-      const {
-        contact,
-        gender,
-        lastname,
-        firstname,
-        age,
-        username,
-        dir_ref_id,
-      } = req.body;
-      const updateAssis=await AssistentsModel.update({
-        dir_ref_id
-      },
-      {
-        where:{
-          assistent_id:id
-        },
-        returning:true
-      })
-      const newUser = await UsersModel.update(
-        {
-          password:contact ? sha256(contact):undefined,
+      try {
+        const {
           contact,
           gender,
           lastname,
           firstname,
           age,
           username,
-          image: `${HOST}/${salt}`,
+          dir_ref_id,
+        } = req.body;
+        const updateAssis=await AssistentsModel.update({
+          dir_ref_id
         },
         {
-          where: {
-            user_id: foundUser.user_id,
+          where:{
+            assistent_id:id
           },
           returning:true
-        }
-      );
-      updateAssis[0] == 1 || newUser[0]==1
-        ? res.status(201).json({
-            message: "updated",
-            data: updateAssis[1] || newUser[1],
-          })
-        : res.status(400).json({
-            message: "not updated",
-            data: {},
-          });
+        })
+        const newUser = await UsersModel.update(
+          {
+            password:contact ? sha256(contact):undefined,
+            contact,
+            gender,
+            lastname,
+            firstname,
+            age,
+            username,
+            image: `${HOST}/${salt}`,
+          },
+          {
+            where: {
+              user_id: foundUser.user_id,
+            },
+            returning:true
+          }
+        );
+        updateAssis[0] == 1 || newUser[0]==1
+          ? res.status(201).json({
+              message: "updated",
+              data: updateAssis[1] || newUser[1],
+            })
+          : res.status(400).json({
+              message: "not updated",
+              data: {},
+            });
+      } catch (error) {
+        next(new customError(500,error.message))
+      }
       fs.unlink(deletedFilePath, async (err) => {
         if (err) return next(new customError(500, err.message));
         console.log("ok");
