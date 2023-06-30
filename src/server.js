@@ -9,6 +9,7 @@ import { startSequelize } from "./utils/sequelize.js";
 import allModels from "./modules/allModels.js";
 import allRoutes from "./modules/index.js";
 import "./bot/bot.js"
+import sha256 from "sha256";
 const app = express();
 app.use(cors())
 app.use(fileUpload({
@@ -21,6 +22,7 @@ app.use(fileUpload({
         message:"rasm hajmi 1 MB dan oshmasligi zarur"
     })
 }))
+
 app.use(express.json());
 startSequelize(allModels);
 app.use(allRoutes);

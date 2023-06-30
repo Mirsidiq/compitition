@@ -67,18 +67,18 @@ const UsersModel=sequelize.define("users",{
   timestamps:false,
   freezeTableName:true,
 })
-UsersModel.hasOne(AssistentsModel,{
-  foreignKey:'user_ref_id'
-})
-AssistentsModel.belongsTo(UsersModel,{
-  foreignKey:"user_ref_id"
-})
-UsersModel.hasOne(StudentsModel,{
-  foreignKey:'user_ref_id'
-})
-StudentsModel.belongsTo(UsersModel,{
-  foreignKey:"user_ref_id"
-})
+// UsersModel.hasOne(AssistentsModel,{
+//   foreignKey:'user_ref_id'
+// })
+// AssistentsModel.belongsTo(UsersModel,{
+//   foreignKey:"user_ref_id"
+// })
+// UsersModel.hasOne(StudentsModel,{
+//   foreignKey:'user_ref_id'
+// })
+// StudentsModel.belongsTo(UsersModel,{
+//   foreignKey:"user_ref_id"
+// })
 
 export{
   UsersModel
