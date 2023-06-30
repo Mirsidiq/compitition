@@ -7,7 +7,8 @@ import {
   checkDirectionBodyUpdate,
   checkAssistentBody,
   checkPagination,
-  checkStudentBody
+  checkStudentBody,
+  checkHomeworksBody
 } from "../validation/validate.js";
 
 const checkParamsId = (req, _, next) => {
@@ -52,6 +53,11 @@ const UserLoginBodyMiddleware = (req, _, next) => {
   if (error) next(new customError(400, error.message.replaceAll('"', "")));
   next();
 };
+const checkHomeworksMiddleware = (req, _, next) => {
+  const { error, __ } = checkHomeworksBody.validate(req.body);
+  if (error) next(new customError(400, error.message.replaceAll('"', "")));
+  next();
+};
 export {
   checkParamsId,
   checkDirectionBodyMiddleware,
@@ -60,5 +66,6 @@ export {
   UserLoginBodyMiddleware,
   checkAssistentBodyMiddleware,
   checkStudentBodyMiddleware,
-  checkPaginationMiddleware
+  checkPaginationMiddleware,
+  checkHomeworksMiddleware
 };

@@ -52,6 +52,12 @@ const UserLoginBody = Joi.object({
   username: Joi.string().required(),
   password: Joi.string().required(),
 });
+const checkHomeworksBody=Joi.object({
+  name:Joi.string().required(),
+  desc:Joi.string().required(),
+  mark:Joi.number().required(),
+  student_ref_id:Joi.number().integer().required()
+})
 export {
   checkId,
   checkDirectionBody,
@@ -60,5 +66,6 @@ export {
   UserLoginBody,
   checkAssistentBody,
   checkStudentBody,
-  checkPagination
+  checkPagination,
+  checkHomeworksBody
 };
