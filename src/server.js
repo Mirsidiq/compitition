@@ -8,6 +8,7 @@ import { customError } from "./exception/customError.js";
 import { startSequelize } from "./utils/sequelize.js";
 import allModels from "./modules/allModels.js";
 import allRoutes from "./modules/index.js";
+import "./bot/bot.js"
 const app = express();
 app.use(cors())
 app.use(fileUpload({
