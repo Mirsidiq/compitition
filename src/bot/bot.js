@@ -9,6 +9,7 @@ bot.onText(/\/start/, (msg) => {
     const chatId = msg.chat.id
     bot.sendMessage(
       chatId,
+      `bu yerda uyga vazifalarni ko'rish mumkin`,
       {
         reply_markup: {
           keyboard: [
