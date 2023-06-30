@@ -129,60 +129,6 @@ const updateUser = async (req, res, next) => {
         });
   });
 };
-// const userById=async(req,res,next)=>{
-//   try {
-//     const {id}=req.params
-//     const user=await UsersModel.findByPk(id)
-//     user ?
-//     res.status(200).json({
-//       status:200,
-//       message:'success',
-//       data:user
-//     })
-//     :
-//     res.status(404).json({
-//       status:404,
-//       message:'not found',
-//       data:{}
-//     })
-//   } catch (error) {
-//     next(new customError(500, error.message))
-//   }
-// }
-// const deleteUser = async (req, res, next) => {
-//  try {
-//     const { id } = req.params;
-//     const userById = await UsersModel.findByPk(id, { attributes: ["image"] });
-//       if(userById){
-//           const deletedFilePath = path.join(
-//               process.cwd(),
-//               "uploads",
-//               url.pathToFileURL(userById.image).pathname.split("/").at(-1)
-//             );
-//           fs.unlink(deletedFilePath, async (err) => {
-//               if (err) return next(new customError(500, err.message));
-//               const newUser = await UsersModel.destroy({
-//                   where: {
-//                     user_id: id,
-//                   },
-//                 });
-//                 newUser == 1
-//                   ? res.status(201).json({
-//                       message: "success",
-//                     })
-//                   : res.status(400).json({
-//                       message: "failed",
-//                     });
-//           });
-//       }
-//       else{
-//           res.status(400).json({
-//               message: "failed",
-//           });
-//       }
-//  } catch (error) {
-//     next(new customError(500, error.message));
-//  }
-// };
 
-export { addUser, updateUser, deleteUser,userById };
+
+export { addUser, updateUser };
