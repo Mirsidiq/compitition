@@ -4,6 +4,6 @@ import { checkAdminToken } from "../../middlewares/checkToken.js";
 import {  checkParamsId } from "../../middlewares/validation.middleware.js";
 
 const router=Router()
-router.post("/users/admin/add",checkAdminToken,addUser)
+router.post("/users/admin/add",addUser)
 router.put("/users/admin/:id",checkAdminToken,checkParamsId,updateUser)
 export default router
