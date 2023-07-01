@@ -33,24 +33,24 @@ const DirectionsModel=sequelize.define("directions",{
   timestamps:false,
   freezeTableName:true,
 })
-// DirectionsModel.hasOne(AssistentsModel,{
-//   foreignKey:"dir_ref_id"
-// })
-// AssistentsModel.belongsTo(DirectionsModel,{
-//   foreignKey:"dir_ref_id"
-// })
-// DirectionsModel.hasMany(GroupsModel,{
-//   foreignKey:"dir_ref_id"
-// })
-// GroupsModel.belongsTo(DirectionsModel,{
-//   foreignKey:"dir_ref_id"
-// })
-// DirectionsModel.hasMany(StudentsModel,{
-//   foreignKey:"dir_ref_id"
-// })
-// StudentsModel.belongsTo(DirectionsModel,{
-//   foreignKey:"dir_ref_id"
-// })
+DirectionsModel.hasOne(AssistentsModel,{
+  foreignKey:"dir_ref_id"
+})
+AssistentsModel.belongsTo(DirectionsModel,{
+  foreignKey:"dir_ref_id"
+})
+DirectionsModel.hasMany(GroupsModel,{
+  foreignKey:"dir_ref_id"
+})
+GroupsModel.belongsTo(DirectionsModel,{
+  foreignKey:"dir_ref_id"
+})
+DirectionsModel.hasMany(StudentsModel,{
+  foreignKey:"dir_ref_id"
+})
+StudentsModel.belongsTo(DirectionsModel,{
+  foreignKey:"dir_ref_id"
+})
 
 export{
   DirectionsModel

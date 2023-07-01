@@ -56,12 +56,12 @@ const GroupsModel=sequelize.define("groups",{
   timestamps:false,
   freezeTableName:true,
 })
-// GroupsModel.hasMany(StudentsModel,{
-//   foreignKey:"gr_ref_id"
-// })
-// StudentsModel.belongsTo(GroupsModel,{
-//   foreignKey:"gr_ref_id"
-// })
+GroupsModel.hasMany(StudentsModel,{
+  foreignKey:"gr_ref_id"
+})
+StudentsModel.belongsTo(GroupsModel,{
+  foreignKey:"gr_ref_id"
+})
 
 export{
   GroupsModel
