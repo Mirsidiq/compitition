@@ -38,7 +38,7 @@ bot.on('message',async msg=>{
                 }
             })
             if(findStudent){
-                const baholar=await HomeworksModel.findAll({
+                let baholar=await HomeworksModel.findAll({
                     where:{
                         student_ref_id:findStudent.student_id
                     },
@@ -81,7 +81,7 @@ bot.on('message',async msg=>{
                 }
             })
             if(findStudent){
-                const baholar=await HomeworksModel.findAll({
+                let baholar=await HomeworksModel.findAll({
                     where:{
                         student_ref_id:findStudent.student_id
                     },
@@ -89,13 +89,11 @@ bot.on('message',async msg=>{
                 })
                 const lastHomework=baholar[baholar.length-1]
                 if(lastHomework){
-                    for(let i of baholar){
                         let year= new Date(lastHomework.date).getFullYear()
                         let mont= new Date(lastHomework.date).getMonth()
                         let day= new Date(lastHomework.date).getDay()
                         bot.sendMessage(chatId,`vazifa: ${lastHomework.name}, sharh: ${lastHomework.desc}, baho: ${lastHomework.mark}, sana: ${day}/${mont}/${year}
                         `)
-                    }
                 }
                 else{
                     bot.sendMessage(chatId,`baholar mavjud emas`)
