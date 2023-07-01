@@ -244,13 +244,6 @@ const deleteGroup = async (req, res, next) => {
     const { id } = req.params;
     const groupById=await GroupsModel.findByPk(id,{attributes:['image']})
     if(groupById){
-      const deletedFilePath = path.join(
-        process.cwd(),
-        "uploads",
-        url.pathToFileURL(groupById.image).pathname.split("/").at(-1)
-      );
-      fs.unlink(deletedFilePath, async (err) => {
-        if (err) return next(new customError(500, err.message));
         const deleteGroup = await GroupsModel.destroy({
           where: {
             gr_id: id,
@@ -265,7 +258,6 @@ const deleteGroup = async (req, res, next) => {
             status:400,
               message: "failed",
             });
-      })
     }
     else{
       next(new customError(400,"failed"))
