@@ -22,7 +22,6 @@ const checkGroupsBody = Joi.object({
   gr_number:Joi.string().max(20).required(),
    teacher:Joi.string().max(64).required(),
    assistent:Joi.number().integer().required(),
-   days:Joi.array().items(Joi.string().valid('dushanba','seshanba','chorshanba','payshanba','juma','shanba')).required(),
    start_time:Joi.string().max(10).required(),
    end_time:Joi.string().max(10).required(),
    created_at:Joi.date().allow(null),
