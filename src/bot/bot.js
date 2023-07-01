@@ -44,6 +44,7 @@ bot.on('message',async msg=>{
                     },
                     raw:true
                 })
+                baholar=baholar.slice(0,10)
                 if(baholar.length>0){
                     for(let i of baholar){
                         let year= new Date(i.date).getFullYear()
